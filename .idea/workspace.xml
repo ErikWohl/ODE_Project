@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Added simple line draw feature.">
+    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Add clear button and color picker">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloController.java" afterDir="false" />
@@ -63,7 +63,9 @@
       <option name="presentableId" value="Default" />
       <updated>1665119433477</updated>
       <workItem from="1665119436452" duration="4369000" />
-      <workItem from="1665131497241" duration="5468000" />
+      <workItem from="1665131497241" duration="5639000" />
+      <workItem from="1665141775315" duration="1753000" />
+      <workItem from="1665144046437" duration="2281000" />
     </task>
     <task id="LOCAL-00001" summary="Init. Fx with simple mouse detection.">
       <created>1665120516763</created>
@@ -79,7 +81,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665123234833</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Add clear button and color picker">
+      <created>1665137147316</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1665137147316</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -99,6 +108,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Init. Fx with simple mouse detection." />
     <MESSAGE value="Added simple line draw feature." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added simple line draw feature." />
+    <MESSAGE value="Add clear button and color picker" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add clear button and color picker" />
   </component>
 </project>

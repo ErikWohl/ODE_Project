@@ -38,5 +38,13 @@
             </children>
          </Pane>
       </center>
+      <right>
+         <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+            <items>
+               <TextArea fx:id="textOutput" prefHeight="200.0" prefWidth="200.0" />
+               <TextField fx:id="textInput" onAction="#onEnterText" />
+            </items>
+         </SplitPane>
+      </right>
    </BorderPane>
 </Pane>

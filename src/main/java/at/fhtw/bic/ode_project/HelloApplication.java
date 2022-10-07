@@ -7,8 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -26,10 +26,10 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.show();
 
-        initCanvas(stage);
+        initUI(stage);
     }
 
-    public void initCanvas(Stage stage) {
+    public void initUI(Stage stage) {
 
         var scene = stage.getScene();
 
@@ -40,6 +40,11 @@ public class HelloApplication extends Application {
 
         //todo: https://docs.oracle.com/javafx/2/events/filters.htm
         // https://stackoverflow.com/questions/46649406/custom-javafx-events
+
+        //Textflow
+        var textOutput = (TextArea) scene.lookup("#textOutput");
+
+
         scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -50,6 +55,8 @@ public class HelloApplication extends Application {
                         "(x: "       + mouseEvent.getX()      + ", y: "       + mouseEvent.getY()       + ") --\n" +
                         "(sceneX: "  + mouseEvent.getSceneX() + ", sceneY: "  + mouseEvent.getSceneY()  + ") --\n" +
                         "(screenX: " + mouseEvent.getScreenX()+ ", screenY: " + mouseEvent.getScreenY() + ")";
+                String cd = mouseEvent.getX() + " " + mouseEvent.getY();
+                textOutput.setText(textOutput.getText() + "\n" + cd);
                 //System.out.printf("mouse was pressed!\n%s\n", msg);
             }
         });
@@ -67,6 +74,8 @@ public class HelloApplication extends Application {
                         "(x: "       + mouseEvent.getX()      + ", y: "       + mouseEvent.getY()       + ") --\n" +
                         "(sceneX: "  + mouseEvent.getSceneX() + ", sceneY: "  + mouseEvent.getSceneY()  + ") --\n" +
                         "(screenX: " + mouseEvent.getScreenX()+ ", screenY: " + mouseEvent.getScreenY() + ")";
+                String cd = mouseEvent.getX() + " " + mouseEvent.getY();
+                textOutput.setText(textOutput.getText() + "\n" + cd);
                 //System.out.printf("mouse was dragged!\n%s\n", msg);
             }
         });
@@ -81,10 +90,14 @@ public class HelloApplication extends Application {
                         "(x: "       + mouseEvent.getX()      + ", y: "       + mouseEvent.getY()       + ") --\n" +
                         "(sceneX: "  + mouseEvent.getSceneX() + ", sceneY: "  + mouseEvent.getSceneY()  + ") --\n" +
                         "(screenX: " + mouseEvent.getScreenX()+ ", screenY: " + mouseEvent.getScreenY() + ")";
+                String cd = mouseEvent.getX() + " " + mouseEvent.getY();
+                textOutput.setText(textOutput.getText() + "\n" + cd);
                 //System.out.printf("mouse was released!\n%s\n", msg);
             }
         });
 
+
+        //Colorpicker
         var colorPicker = (ColorPicker) scene.lookup("#colorPicker");
 
         // create a event handler
