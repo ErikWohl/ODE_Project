@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
 
-<?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="at.fhtw.bic.ode_project.HelloController">
+<Pane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bic.ode_project.HelloController">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+   <BorderPane>
+      <bottom>
+         <SplitPane dividerPositions="0.29797979797979796" BorderPane.alignment="CENTER">
+           <items>
+             <AnchorPane>
+                  <children>
+                       <Button fx:id="buttonTest" minHeight="20.0" minWidth="100.0" onAction="#onTestClick" text="Clear" textAlignment="CENTER" />
+                  </children>
+               </AnchorPane>
+             <AnchorPane>
+                  <children>
+                       <ColorPicker fx:id="colorPicker">
+                        <value>
+                           <Color />
+                        </value>
+                     </ColorPicker>
+                  </children>
+               </AnchorPane>
+           </items>
+         </SplitPane>
+      </bottom>
+      <center>
+         <Pane style="-fx-border-color: black;" BorderPane.alignment="CENTER">
+            <children>
+                 <Canvas fx:id="canvas1" height="300" width="300" />
+            </children>
+         </Pane>
+      </center>
+   </BorderPane>
+</Pane>
