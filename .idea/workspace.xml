@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Add text output and input">
+    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Add stroke size increase/decrease and text clear">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/at/fhtw/bic/ode_project/hello-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/at/fhtw/bic/ode_project/hello-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -32,16 +33,16 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/eriky/Downloads/jms-examples&quot;
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/eriky/Documents/GitHub/ODE_Project_skribbl.io&quot;
   }
 }</component>
   <component name="RunManager">
-    <configuration name="HelloApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+    <configuration name="at.fhtw.bic.ode_project.HelloApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="at.fhtw.bic.ode_project.HelloApplication" />
       <module name="ODE_Project" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="at.fhtw.bic.ode_project.*" />
+          <option name="PATTERN" value="at.fhtw.bic.ode_project.Controller.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -51,7 +52,7 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.HelloApplication" />
+        <item itemvalue="Application.at.fhtw.bic.ode_project.HelloApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -71,7 +72,9 @@
       <workItem from="1668016967415" duration="5000" />
       <workItem from="1669835389394" duration="120000" />
       <workItem from="1670952490480" duration="83000" />
-      <workItem from="1672063542182" duration="438000" />
+      <workItem from="1672063542182" duration="1012000" />
+      <workItem from="1672064631892" duration="33000" />
+      <workItem from="1672064805835" duration="2292000" />
     </task>
     <task id="LOCAL-00001" summary="Init. Fx with simple mouse detection.">
       <created>1665120516763</created>
@@ -101,7 +104,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665146495837</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Add stroke size increase/decrease and text clear">
+      <created>1672064122129</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1672064122129</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -112,7 +122,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -123,6 +145,7 @@
     <MESSAGE value="Added simple line draw feature." />
     <MESSAGE value="Add clear button and color picker" />
     <MESSAGE value="Add text output and input" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add text output and input" />
+    <MESSAGE value="Add stroke size increase/decrease and text clear" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add stroke size increase/decrease and text clear" />
   </component>
 </project>

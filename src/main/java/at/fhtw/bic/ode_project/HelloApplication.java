@@ -18,38 +18,24 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-
-
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Hello!");
+        stage.setTitle("Skribbl.io");
         stage.setScene(scene);
         stage.show();
 
         initUI(stage);
     }
-
+    //todo: https://docs.oracle.com/javafx/2/events/filters.htm
+    // https://stackoverflow.com/questions/46649406/custom-javafx-events
+    // https://docs.oracle.com/javafx/2/events/processing.htm
     public void initUI(Stage stage) {
-
         var scene = stage.getScene();
-
-        var canvas = (Canvas) scene.lookup("#canvas1");
-
+        var canvas = (Canvas) scene.lookup("#canvas");
         var gc = canvas.getGraphicsContext2D();
-        gc.setLineWidth(1.0);
-
-        //todo: https://docs.oracle.com/javafx/2/events/filters.htm
-        // https://stackoverflow.com/questions/46649406/custom-javafx-events
-        // https://docs.oracle.com/javafx/2/events/processing.htm
-/*
-  String msg =
-                        "(x: "       + mouseEvent.getX()      + ", y: "       + mouseEvent.getY()       + ") --\n" +
-                        "(sceneX: "  + mouseEvent.getSceneX() + ", sceneY: "  + mouseEvent.getSceneY()  + ") --\n" +
-                        "(screenX: " + mouseEvent.getScreenX()+ ", screenY: " + mouseEvent.getScreenY() + ")";
-*/
-        //Textflow
         var textOutput = (TextArea) scene.lookup("#textOutput");
 
+        gc.setLineWidth(1.0);
 
         scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
@@ -93,7 +79,7 @@ public class HelloApplication extends Application {
         //Colorpicker
         var colorPicker = (ColorPicker) scene.lookup("#colorPicker");
 
-        // create a event handler
+        // create an event handler
         EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e)
             {
@@ -106,11 +92,9 @@ public class HelloApplication extends Application {
         // set listener
         colorPicker.setOnAction(event);
 
-        stage.setTitle("Lines");
         stage.setScene(scene);
         stage.show();
     }
-
     public static void main(String[] args) {
         launch();
     }

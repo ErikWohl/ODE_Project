@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<Pane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bic.ode_project.HelloController">
+<Pane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bic.ode_project.Controller.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -14,7 +14,7 @@
       <center>
          <Pane style="-fx-border-color: black;" BorderPane.alignment="CENTER">
             <children>
-                 <Canvas fx:id="canvas1" height="300" width="300" />
+                 <Canvas fx:id="canvas" height="300" width="300" />
             </children>
          </Pane>
       </center>
