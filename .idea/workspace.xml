@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Add clear button and color picker">
+    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Add text output and input">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloController.java" afterDir="false" />
@@ -31,7 +31,8 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/eriky/Downloads/jms-examples&quot;
   }
 }</component>
   <component name="RunManager">
@@ -65,7 +66,12 @@
       <workItem from="1665119436452" duration="4369000" />
       <workItem from="1665131497241" duration="5639000" />
       <workItem from="1665141775315" duration="1753000" />
-      <workItem from="1665144046437" duration="2281000" />
+      <workItem from="1665144046437" duration="2462000" />
+      <workItem from="1666019298497" duration="3767000" />
+      <workItem from="1668016967415" duration="5000" />
+      <workItem from="1669835389394" duration="120000" />
+      <workItem from="1670952490480" duration="83000" />
+      <workItem from="1672063542182" duration="438000" />
     </task>
     <task id="LOCAL-00001" summary="Init. Fx with simple mouse detection.">
       <created>1665120516763</created>
@@ -88,7 +94,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665137147316</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Add text output and input">
+      <created>1665146495837</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1665146495837</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -109,6 +122,7 @@
     <MESSAGE value="Init. Fx with simple mouse detection." />
     <MESSAGE value="Added simple line draw feature." />
     <MESSAGE value="Add clear button and color picker" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add clear button and color picker" />
+    <MESSAGE value="Add text output and input" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add text output and input" />
   </component>
 </project>

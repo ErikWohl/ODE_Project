@@ -11,26 +11,6 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
    <BorderPane>
-      <bottom>
-         <SplitPane dividerPositions="0.29797979797979796" BorderPane.alignment="CENTER">
-           <items>
-             <AnchorPane>
-                  <children>
-                       <Button fx:id="buttonTest" minHeight="20.0" minWidth="100.0" onAction="#onTestClick" text="Clear" textAlignment="CENTER" />
-                  </children>
-               </AnchorPane>
-             <AnchorPane>
-                  <children>
-                       <ColorPicker fx:id="colorPicker">
-                        <value>
-                           <Color />
-                        </value>
-                     </ColorPicker>
-                  </children>
-               </AnchorPane>
-           </items>
-         </SplitPane>
-      </bottom>
       <center>
          <Pane style="-fx-border-color: black;" BorderPane.alignment="CENTER">
             <children>
@@ -46,5 +26,20 @@
             </items>
          </SplitPane>
       </right>
+      <bottom>
+         <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+           <buttons>
+             <Button fx:id="textClearButton" mnemonicParsing="false" onAction="#onTextClearButtonClick" text="Clear Text" />
+                 <Button fx:id="graphicClearButton" minHeight="20.0" minWidth="100.0" onAction="#onGraphicClearButtonClick" text="Clear Graphic" textAlignment="CENTER" />
+                 <ColorPicker fx:id="colorPicker">
+                  <value>
+                     <Color />
+                  </value>
+               </ColorPicker>
+               <Button fx:id="strokeIncreaseButton" mnemonicParsing="false" onAction="#onStrokeIncreaseButtonClick" text="Increase stroke size" />
+               <Button fx:id="strokeDecreaseButton" mnemonicParsing="false" onAction="#onStrokeDecreaseButtonClick" text="Decrease stroke size" />
+           </buttons>
+         </ButtonBar>
+      </bottom>
    </BorderPane>
 </Pane>

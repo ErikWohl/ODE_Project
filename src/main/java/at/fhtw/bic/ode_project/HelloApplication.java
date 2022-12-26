@@ -40,7 +40,13 @@ public class HelloApplication extends Application {
 
         //todo: https://docs.oracle.com/javafx/2/events/filters.htm
         // https://stackoverflow.com/questions/46649406/custom-javafx-events
-
+        // https://docs.oracle.com/javafx/2/events/processing.htm
+/*
+  String msg =
+                        "(x: "       + mouseEvent.getX()      + ", y: "       + mouseEvent.getY()       + ") --\n" +
+                        "(sceneX: "  + mouseEvent.getSceneX() + ", sceneY: "  + mouseEvent.getSceneY()  + ") --\n" +
+                        "(screenX: " + mouseEvent.getScreenX()+ ", screenY: " + mouseEvent.getScreenY() + ")";
+*/
         //Textflow
         var textOutput = (TextArea) scene.lookup("#textOutput");
 
@@ -48,51 +54,38 @@ public class HelloApplication extends Application {
         scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
-                gc.beginPath();
-
-                String msg =
-                        "(x: "       + mouseEvent.getX()      + ", y: "       + mouseEvent.getY()       + ") --\n" +
-                        "(sceneX: "  + mouseEvent.getSceneX() + ", sceneY: "  + mouseEvent.getSceneY()  + ") --\n" +
-                        "(screenX: " + mouseEvent.getScreenX()+ ", screenY: " + mouseEvent.getScreenY() + ")";
-                String cd = mouseEvent.getX() + " " + mouseEvent.getY();
-                textOutput.setText(textOutput.getText() + "\n" + cd);
-                //System.out.printf("mouse was pressed!\n%s\n", msg);
+                if(mouseEvent.getTarget() instanceof Canvas) {
+                    gc.beginPath();
+                    String cd = mouseEvent.getX() + " " + mouseEvent.getY();
+                    textOutput.setText(textOutput.getText() + "\n" + cd);
+                    System.out.printf("mouse was pressed!\n%s\n", mouseEvent.getTarget());
+                }
             }
         });
 
         scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
-
-                gc.lineTo(mouseEvent.getX(), mouseEvent.getY());
-                gc.stroke();
-                gc.moveTo(mouseEvent.getX(), mouseEvent.getY());
-
-                String msg =
-                        "(x: "       + mouseEvent.getX()      + ", y: "       + mouseEvent.getY()       + ") --\n" +
-                        "(sceneX: "  + mouseEvent.getSceneX() + ", sceneY: "  + mouseEvent.getSceneY()  + ") --\n" +
-                        "(screenX: " + mouseEvent.getScreenX()+ ", screenY: " + mouseEvent.getScreenY() + ")";
-                String cd = mouseEvent.getX() + " " + mouseEvent.getY();
-                textOutput.setText(textOutput.getText() + "\n" + cd);
-                //System.out.printf("mouse was dragged!\n%s\n", msg);
+                if(mouseEvent.getTarget() instanceof Canvas) {
+                    gc.lineTo(mouseEvent.getX(), mouseEvent.getY());
+                    gc.stroke();
+                    gc.moveTo(mouseEvent.getX(), mouseEvent.getY());
+                    String cd = mouseEvent.getX() + " " + mouseEvent.getY();
+                    textOutput.setText(textOutput.getText() + "\n" + cd);
+                    System.out.printf("mouse was pressed!\n%s\n", mouseEvent.getTarget());
+                }
             }
         });
 
         scene.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
-
-                gc.closePath();
-
-                String msg =
-                        "(x: "       + mouseEvent.getX()      + ", y: "       + mouseEvent.getY()       + ") --\n" +
-                        "(sceneX: "  + mouseEvent.getSceneX() + ", sceneY: "  + mouseEvent.getSceneY()  + ") --\n" +
-                        "(screenX: " + mouseEvent.getScreenX()+ ", screenY: " + mouseEvent.getScreenY() + ")";
-                String cd = mouseEvent.getX() + " " + mouseEvent.getY();
-                textOutput.setText(textOutput.getText() + "\n" + cd);
-                //System.out.printf("mouse was released!\n%s\n", msg);
+                if(mouseEvent.getTarget() instanceof Canvas) {
+                    gc.closePath();
+                    String cd = mouseEvent.getX() + " " + mouseEvent.getY();
+                    textOutput.setText(textOutput.getText() + "\n" + cd);
+                    System.out.printf("mouse was pressed!\n%s\n", mouseEvent.getTarget());
+                }
             }
         });
 
