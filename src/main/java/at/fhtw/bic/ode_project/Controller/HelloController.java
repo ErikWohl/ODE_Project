@@ -38,6 +38,8 @@ public class HelloController implements ClientObserver {
     private Stage stage;
     private TcpService client;
     private boolean outOfBound = false;
+    private double currentPathXPosition = 0;
+    private double currentPathYPosition = 0;
 
     public void setScene(Scene scene) {
         this.scene = scene;
@@ -45,31 +47,37 @@ public class HelloController implements ClientObserver {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+
+    //###################### ButtonClick Methods #############################
     @FXML
     protected void onGraphicClearButtonClick() {
         var gc = canvas.getGraphicsContext2D();
         gc.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
         logger.debug("Button was clicked!");
     }
-
     @FXML
     protected void onTextClearButtonClick() {
         textOutput.clear();
         logger.debug("Button was clicked!");
     }
-
     @FXML
     protected void onStrokeIncreaseButtonClick() {
-        canvas.getGraphicsContext2D().setLineWidth(10);
-        logger.debug("Stroke width is 10!");
+        double length = canvas.getGraphicsContext2D().getLineWidth();
+        if(length <= 90) {
+            length += 10;
+            canvas.getGraphicsContext2D().setLineWidth(length);
+        }
+        logger.debug("Stroke width: " + length);
     }
-
     @FXML
     protected void onStrokeDecreaseButtonClick() {
-        canvas.getGraphicsContext2D().setLineWidth(1);
-        logger.debug("Stroke width is 1!");
+        double length = canvas.getGraphicsContext2D().getLineWidth();
+        if(length >= 11) {
+            length -= 10;
+            canvas.getGraphicsContext2D().setLineWidth(length);
+        }
+        logger.debug("Stroke width: " + length);
     }
-
     @FXML
     protected void onSaveImageButtonClick() {
         logger.info("Trying to safe file.");
@@ -98,52 +106,15 @@ public class HelloController implements ClientObserver {
         }
     }
 
-    @FXML
-    protected void onEnterText() {
-        //todo: Verarbeitung des geschriebenen
-        // Commands etc.
-        logger.info("Entered text: " + textInput.getText());
-
-        if(!checkInputText(textInput.getText())) {
-            textOutput.setText(textOutput.getText() + "\n" + textInput.getText());
-            if(client.isStarted()) {
-                client.sendMessage(textInput.getText());
-            }
-        }
-        textInput.clear();
-    }
-
-    private boolean checkInputText(String txt) {
-        //Commands starten mit -- und sollen nicht im Textfenster ausgegeben werden
-        //Command Struktur: --command:var:var:var;
-        if(!txt.startsWith("--") && !txt.endsWith(";"))
-            return false;
-        txt = txt.replace("-", "").replace(";", "");
-        String[] commandsegments = txt.split(":");
-
-        switch (commandsegments[0]) {
-            case "sethost": {
-                client.setSocketAddress(new InetSocketAddress(commandsegments[1], Integer.parseInt(commandsegments[2])));
-                break;
-            }
-            case "startclient": {
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.submit(() -> client.run());
-            }
-        }
-
-        return true;
-    }
+    //###################### Initialization Methods #############################
 
     public HelloController() {
         client = new TcpService("localhost", 8080);
         client.setClientObserver(this);
     }
-
     @FXML
     private void initialize() {
     }
-
     public void initUI(Stage stage) {
         logger.trace("Trace Message!");
         logger.debug("Debug Message!");
@@ -174,6 +145,8 @@ public class HelloController implements ClientObserver {
 
                 if(mouseEvent.getTarget() instanceof Canvas) {
                     gc.beginPath();
+                    currentPathXPosition = mouseEvent.getX();
+                    currentPathYPosition = mouseEvent.getY();
                     logger.trace("mouse was pressed.");
                 }
             }
@@ -186,9 +159,24 @@ public class HelloController implements ClientObserver {
                     return;
                 }
                 if(mouseEvent.getTarget() instanceof Canvas) {
+                    StringBuilder stringBuilder = new StringBuilder(',');
+                    String message = String.join(";",
+                            String.valueOf((int)currentPathXPosition),
+                            String.valueOf((int)currentPathYPosition),
+                            String.valueOf((int)mouseEvent.getX()),
+                            String.valueOf((int)mouseEvent.getY())
+                            );
+
+                    currentPathXPosition = mouseEvent.getX();
+                    currentPathYPosition = mouseEvent.getY();
+
+
                     gc.lineTo(mouseEvent.getX(), mouseEvent.getY());
                     gc.stroke();
                     gc.moveTo(mouseEvent.getX(), mouseEvent.getY());
+                    if(client.isStarted()) {
+                        client.sendCommand(message, CommandEnum.DRAWING);
+                    }
                     logger.trace("mouse was dragged: " + mouseEvent.getX() + "|" + mouseEvent.getY());
                 }
             }
@@ -246,17 +234,84 @@ public class HelloController implements ClientObserver {
         colorPicker.setOnAction(event);
     }
 
+    //###################### Send Methods #############################
+    @FXML
+    protected void onEnterText() {
+        //todo: Verarbeitung des geschriebenen
+        // Commands etc.
+        logger.info("Entered text: " + textInput.getText());
+
+        if(!checkInputText(textInput.getText())) {
+            textOutput.setText(textOutput.getText() + "\n" + textInput.getText());
+            if(client.isStarted()) {
+                client.sendCommand(textInput.getText(), CommandEnum.MESSAGE);
+            }
+        }
+        textInput.clear();
+    }
+    private boolean checkInputText(String txt) {
+        //Commands starten mit -- und sollen nicht im Textfenster ausgegeben werden
+        //Command Struktur: --command:var:var:var;
+        if(!txt.startsWith("--") && !txt.endsWith(";"))
+            return false;
+        txt = txt.replace("-", "").replace(";", "");
+        String[] commandsegments = txt.split(":");
+
+        switch (commandsegments[0]) {
+            case "sethost": {
+                client.setSocketAddress(new InetSocketAddress(commandsegments[1], Integer.parseInt(commandsegments[2])));
+                break;
+            }
+            case "startclient": {
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.submit(() -> client.run());
+            }
+        }
+
+        return true;
+    }
+
+    //###################### Receive Methods #############################
     @Override
     public void onMessageReceive(String message) {
         //todo Abarbeitung von erhaltenen Messages
 
-        textOutput.setText(textOutput.getText() + "\n" + message);
-    }
+        // Abarbeitung der commands
+        // Commands sind immer 3 Zeichen lang.
+        String command = message.substring(0, 3);
+        logger.debug("command: " + command);
+        CommandEnum commandEnum = CommandEnum.fromString(command);
+        switch (commandEnum) {
+            case MESSAGE: {
+                textOutput.setText(textOutput.getText() + "\n" + message.substring(3));
+                break;
+            }
+            case DRAWING: {
+                String[] points = message.substring(3).split(";");
+                // Da WPF keine double Koordinaten besitzt machen wir int
+                int x1,x2,y1,y2;
+                x1 = Integer.parseInt(points[0]);
+                y1 = Integer.parseInt(points[1]);
+                x2 = Integer.parseInt(points[2]);
+                y2 = Integer.parseInt(points[3]);
 
+                drawLine(x1,y1,x2,y2);
+
+                break;
+            }
+        }
+    }
     @Override
     public void onDebugMessage(String message) {
         //todo Abarbeitung von debug Messages
 
         textOutput.setText(textOutput.getText() + "\n" + message);
+    }
+
+    //###################### Receive Methods #############################
+
+    public void drawLine(int x1, int y1, int x2, int y2) {
+        var gc = canvas.getGraphicsContext2D();
+        gc.strokeLine(x1, y1,x2,y2);
     }
 }

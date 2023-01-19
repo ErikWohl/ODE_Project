@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import at.fhtw.bic.ode_project.Controller.CommandEnum;
 import at.fhtw.bic.ode_project.Exceptions.NumberOfRetriesExceededException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -46,19 +47,15 @@ public class TcpService implements Runnable {
 
     public void sendMessage(String message) {
         logger.debug("Trying to send message connection status: " + started);
-
-        ReadWriteLock lock = new ReentrantReadWriteLock();
-        lock.writeLock().lock();
-        try {
-            if(!started) {
-                logger.debug("Client is not started.");
-                return;
-            }
-        } finally {
-            lock.writeLock().unlock();
-        }
-
         output.println(message);
+        logger.debug("Message:  " + message + "sent. ");
+
+    }
+
+    public void sendCommand(String message, CommandEnum commandEnum) {
+        logger.debug("Trying to send command connection status: " + started);
+        output.println(commandEnum.getCommand() + message);
+        logger.debug("Command:  " + message + "sent. ");
     }
 
     @Override
