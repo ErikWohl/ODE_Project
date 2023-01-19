@@ -13,21 +13,25 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class HelloController implements ClientObserver {
+
+    private Logger logger = LogManager.getLogger(HelloController.class);
     @FXML
     private Canvas canvas;
     @FXML
     private TextArea textOutput;
     @FXML
     private TextField textInput;
-
     private Scene scene;
     private TcpService client;
+    private boolean outOfBound = false;
 
     public void setScene(Scene scene) {
         this.scene = scene;
@@ -36,32 +40,32 @@ public class HelloController implements ClientObserver {
     protected void onGraphicClearButtonClick() {
         var gc = canvas.getGraphicsContext2D();
         gc.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
-        System.out.printf("Button was clicked!\n");
+        logger.debug("Button was clicked!");
     }
 
     @FXML
     protected void onTextClearButtonClick() {
         textOutput.clear();
-        System.out.printf("Button was clicked!\n");
+        logger.debug("Button was clicked!");
     }
 
     @FXML
     protected void onStrokeIncreaseButtonClick() {
         canvas.getGraphicsContext2D().setLineWidth(10);
-        System.out.printf("Stroke width is 10!\n");
+        logger.debug("Stroke width is 10!");
     }
 
     @FXML
     protected void onStrokeDecreaseButtonClick() {
         canvas.getGraphicsContext2D().setLineWidth(1);
-        System.out.printf("Stroke width is 1!\n");
+        logger.debug("Stroke width is 1!");
     }
 
     @FXML
     protected void onEnterText() {
         //todo: Verarbeitung des geschriebenen
         // Commands etc.
-
+        logger.info("Entered text: " + textInput.getText());
 
         if(!checkInputText(textInput.getText())) {
             textOutput.setText(textOutput.getText() + "\n" + textInput.getText());
@@ -104,6 +108,13 @@ public class HelloController implements ClientObserver {
     }
 
     public void initUI(Stage stage) {
+        logger.trace("Trace Message!");
+        logger.debug("Debug Message!");
+        logger.info("Info Message!");
+        logger.warn("Warn Message!");
+        logger.error("Error Message!");
+        logger.fatal("Fatal Message!");
+
         var scene = stage.getScene();
 
         addMouseEvents(scene);
@@ -120,11 +131,13 @@ public class HelloController implements ClientObserver {
         scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                if(outOfBound) {
+                    return;
+                }
+
                 if(mouseEvent.getTarget() instanceof Canvas) {
                     gc.beginPath();
-                    String cd = mouseEvent.getX() + " " + mouseEvent.getY();
-                    textOutput.setText(textOutput.getText() + "\n" + cd);
-                    System.out.printf("mouse was pressed!\n%s\n", mouseEvent.getTarget());
+                    logger.trace("mouse was pressed.");
                 }
             }
         });
@@ -132,13 +145,14 @@ public class HelloController implements ClientObserver {
         scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                if(outOfBound) {
+                    return;
+                }
                 if(mouseEvent.getTarget() instanceof Canvas) {
                     gc.lineTo(mouseEvent.getX(), mouseEvent.getY());
                     gc.stroke();
                     gc.moveTo(mouseEvent.getX(), mouseEvent.getY());
-                    String cd = mouseEvent.getX() + " " + mouseEvent.getY();
-                    textOutput.setText(textOutput.getText() + "\n" + cd);
-                    System.out.printf("mouse was pressed!\n%s\n", mouseEvent.getTarget());
+                    logger.trace("mouse was dragged: " + mouseEvent.getX() + "|" + mouseEvent.getY());
                 }
             }
         });
@@ -146,12 +160,31 @@ public class HelloController implements ClientObserver {
         scene.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                if(outOfBound) {
+                    return;
+                }
+
                 if(mouseEvent.getTarget() instanceof Canvas) {
                     gc.closePath();
-                    String cd = mouseEvent.getX() + " " + mouseEvent.getY();
-                    textOutput.setText(textOutput.getText() + "\n" + cd);
-                    System.out.printf("mouse was pressed!\n%s\n", mouseEvent.getTarget());
+                    logger.trace("mouse was released.");
                 }
+            }
+        });
+
+        scene.addEventFilter(MouseEvent.MOUSE_EXITED_TARGET, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                gc.closePath();
+                outOfBound = true;
+                logger.trace("mouse is out of bound: " +  mouseEvent.getTarget().toString());
+            }
+        });
+        scene.addEventFilter(MouseEvent.MOUSE_ENTERED_TARGET, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                gc.beginPath();
+                outOfBound = false;
+                logger.trace("mouse is in bound: " +  mouseEvent.getTarget().toString());
             }
         });
     }
@@ -167,6 +200,7 @@ public class HelloController implements ClientObserver {
             {
                 // color
                 Color c = colorPicker.getValue();
+                logger.debug("Stroke color was set to " + c.toString());
                 gc.setStroke(c);
             }
         };
@@ -178,6 +212,13 @@ public class HelloController implements ClientObserver {
     @Override
     public void onMessageReceive(String message) {
         //todo Abarbeitung von erhaltenen Messages
+
+        textOutput.setText(textOutput.getText() + "\n" + message);
+    }
+
+    @Override
+    public void onDebugMessage(String message) {
+        //todo Abarbeitung von debug Messages
 
         textOutput.setText(textOutput.getText() + "\n" + message);
     }
