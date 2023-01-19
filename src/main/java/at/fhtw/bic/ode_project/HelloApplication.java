@@ -25,7 +25,7 @@ public class HelloApplication extends Application {
 
         Scene scene = new Scene(root);
         controller.setScene(scene);
-
+        controller.setStage(stage);
         stage.setTitle("Skribbl.io");
         stage.setScene(scene);
         stage.show();

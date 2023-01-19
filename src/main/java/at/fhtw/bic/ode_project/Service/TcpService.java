@@ -1,12 +1,10 @@
 package at.fhtw.bic.ode_project.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -47,6 +45,8 @@ public class TcpService implements Runnable {
     }
 
     public void sendMessage(String message) {
+        logger.debug("Trying to send message connection status: " + started);
+
         ReadWriteLock lock = new ReentrantReadWriteLock();
         lock.writeLock().lock();
         try {
@@ -58,13 +58,7 @@ public class TcpService implements Runnable {
             lock.writeLock().unlock();
         }
 
-        try {
-            output = new PrintWriter(clientSocket.getOutputStream(), true);
-            output.println(message);
-        } catch (IOException e) {
-            logger.info("Server disconnected, while sending message!");
-            disconnect();
-        }
+        output.println(message);
     }
 
     @Override
@@ -83,7 +77,9 @@ public class TcpService implements Runnable {
 
 
         try {
-            listenFromServer();
+            do {
+                listenFromServer();
+            } while(true);
         } catch (NumberOfRetriesExceededException e) {
             logger.info("Max number of tries reached.");
             logger.info("Setting client connection started to false.");
@@ -102,10 +98,11 @@ public class TcpService implements Runnable {
         try {
             if(!clientSocket.isConnected()) {
                 clientSocket.connect(socketAddress);
+                input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), StandardCharsets.UTF_8));
+                output = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8), true);
             }
 
             do {
-                input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String message = input.readLine();
                 logger.info("Received message: " + message);
                 clientObserver.onMessageReceive(message);
@@ -128,6 +125,8 @@ public class TcpService implements Runnable {
                 Thread.sleep((long)secondsToWait * 1000);
                 clientSocket = new Socket();
                 clientSocket.connect(socketAddress);
+                input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), StandardCharsets.UTF_8));
+                output = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), StandardCharsets.UTF_8), true);
                 logger.info("Server connection established.");
                 break;
             } catch (IOException e) {
@@ -161,8 +160,8 @@ public class TcpService implements Runnable {
 
         try {
             logger.info("Try disconnecting from server.");
-            //input.close();
-            //output.close();
+            input.close();
+            output.close();
             clientSocket.close();
         } catch (IOException e) {
             e.printStackTrace();

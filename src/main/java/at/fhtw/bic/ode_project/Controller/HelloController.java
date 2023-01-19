@@ -10,16 +10,21 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
+import javafx.embed.swing.SwingFXUtils;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+import javax.imageio.ImageIO;
 public class HelloController implements ClientObserver {
 
     private Logger logger = LogManager.getLogger(HelloController.class);
@@ -30,11 +35,15 @@ public class HelloController implements ClientObserver {
     @FXML
     private TextField textInput;
     private Scene scene;
+    private Stage stage;
     private TcpService client;
     private boolean outOfBound = false;
 
     public void setScene(Scene scene) {
         this.scene = scene;
+    }
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
     @FXML
     protected void onGraphicClearButtonClick() {
@@ -59,6 +68,34 @@ public class HelloController implements ClientObserver {
     protected void onStrokeDecreaseButtonClick() {
         canvas.getGraphicsContext2D().setLineWidth(1);
         logger.debug("Stroke width is 1!");
+    }
+
+    @FXML
+    protected void onSaveImageButtonClick() {
+        logger.info("Trying to safe file.");
+        FileChooser savefile = new FileChooser();
+        savefile.setTitle("Save File");
+        savefile.initialFileNameProperty().setValue("example.png");
+        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("PNG files", "*PNG");
+        savefile.getExtensionFilters().add(extensionFilter);
+        File file = savefile.showSaveDialog(stage);
+        logger.info("Filename: " + file.getName() + " Path:" + file.getAbsolutePath());
+
+        if (file != null) {
+            try {
+                WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+                canvas.snapshot(null, writableImage);
+                RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                if(ImageIO.write(renderedImage, "png", file)) {
+                    logger.info("Filesave was a success.");
+                } else {
+                    logger.info("Filesave failure.");
+                }
+            } catch (IOException e) {
+                logger.error("Error while saving the picture.");
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML

@@ -38,6 +38,7 @@
                </ColorPicker>
                <Button fx:id="strokeIncreaseButton" mnemonicParsing="false" onAction="#onStrokeIncreaseButtonClick" text="Increase stroke size" />
                <Button fx:id="strokeDecreaseButton" mnemonicParsing="false" onAction="#onStrokeDecreaseButtonClick" text="Decrease stroke size" />
+               <Button fx:id="saveImageButton" mnemonicParsing="false" onAction="#onSaveImageButtonClick" text="Save Image" />
            </buttons>
          </ButtonBar>
       </bottom>
