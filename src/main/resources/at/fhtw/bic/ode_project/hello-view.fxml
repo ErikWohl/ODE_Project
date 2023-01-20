@@ -5,8 +5,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 
-<Pane minHeight="600.0" minWidth="1000.0" prefHeight="600.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bic.ode_project.Controller.HelloController">
+<Pane minHeight="600.0" minWidth="1000.0" prefHeight="650.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bic.ode_project.Controller.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -26,21 +27,67 @@
             </items>
          </SplitPane>
       </right>
+      <top>
+         <HBox prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+               <Label fx:id="outputWord" text="🗑">
+                  <font>
+                     <Font name="Arial" size="32.0" />
+                  </font>
+               </Label>
+            </children>
+         </HBox>
+      </top>
       <bottom>
-         <ButtonBar fx:id="buttonBar" buttonOrder="U+" prefHeight="40.0" prefWidth="200.0" snapToPixel="false" BorderPane.alignment="CENTER">
-           <buttons>
-             <Button fx:id="textClearButton" mnemonicParsing="false" onAction="#onTextClearButtonClick" text="Clear Text" />
-                 <Button fx:id="graphicClearButton" minHeight="20.0" minWidth="100.0" onAction="#onGraphicClearButtonClick" text="Clear Graphic" textAlignment="CENTER" />
-                 <ColorPicker fx:id="colorPicker">
-                  <value>
-                     <Color />
-                  </value>
+         <HBox fx:id="buttonBar" prefHeight="100.0" prefWidth="700.0" BorderPane.alignment="CENTER">
+            <children>
+               <Button fx:id="textClearButton" mnemonicParsing="false" onAction="#onTextClearButtonClick" prefHeight="60.0" prefWidth="125.0" text="Clear Text">
+                  <font>
+                     <Font name="System Bold" size="20.0" />
+                  </font>
+                  <HBox.margin>
+                     <Insets left="25.0" top="20.0" />
+                  </HBox.margin>
+               </Button>
+               <Button fx:id="graphicClearButton" minHeight="20.0" minWidth="60.0" onAction="#onGraphicClearButtonClick" prefHeight="60.0" prefWidth="125.0" text="🗑" textAlignment="CENTER" wrapText="true">
+                 <font>
+                    <Font size="32.0" />
+                 </font>
+                  <HBox.margin>
+                     <Insets left="25.0" top="20.0" />
+                  </HBox.margin>
+               </Button>
+               <ColorPicker fx:id="colorPicker" prefHeight="25.0" prefWidth="125.0">
+                 <value>
+                    <Color />
+                 </value>
+                  <HBox.margin>
+                     <Insets left="25.0" top="38.0" />
+                  </HBox.margin>
                </ColorPicker>
-               <Button fx:id="strokeIncreaseButton" mnemonicParsing="false" onAction="#onStrokeIncreaseButtonClick" text="Increase stroke size" />
-               <Button fx:id="strokeDecreaseButton" mnemonicParsing="false" onAction="#onStrokeDecreaseButtonClick" text="Decrease stroke size" />
-               <Button fx:id="saveImageButton" mnemonicParsing="false" onAction="#onSaveImageButtonClick" text="Save Image" />
-           </buttons>
-         </ButtonBar>
+               <Button fx:id="strokeIncreaseButton" mnemonicParsing="false" onAction="#onStrokeIncreaseButtonClick" prefHeight="60.0" prefWidth="125.0" text="Size +">
+                  <HBox.margin>
+                     <Insets left="25.0" top="20.0" />
+                  </HBox.margin>
+                  <font>
+                     <Font name="System Bold" size="20.0" />
+                  </font></Button>
+               <Button fx:id="strokeDecreaseButton" mnemonicParsing="false" onAction="#onStrokeDecreaseButtonClick" prefHeight="60.0" prefWidth="125.0" text="Size -">
+                  <HBox.margin>
+                     <Insets left="25.0" top="20.0" />
+                  </HBox.margin>
+                  <font>
+                     <Font name="System Bold" size="20.0" />
+                  </font></Button>
+               <Button fx:id="saveImageButton" maxHeight="60.0" maxWidth="125.0" mnemonicParsing="false" onAction="#onSaveImageButtonClick" prefHeight="60.0" prefWidth="125.0" text="📷" wrapText="true">
+                  <HBox.margin>
+                     <Insets left="25.0" top="20.0" />
+                  </HBox.margin>
+                  <font>
+                     <Font size="26.0" />
+                  </font></Button>
+            </children>
+         </HBox>
       </bottom>
    </BorderPane>
 </Pane>

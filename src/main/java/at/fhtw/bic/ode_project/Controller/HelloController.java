@@ -2,6 +2,8 @@ package at.fhtw.bic.ode_project.Controller;
 
 import at.fhtw.bic.ode_project.Enums.CommandEnum;
 import at.fhtw.bic.ode_project.Service.ClientObserver;
+import at.fhtw.bic.ode_project.Service.GameObserver;
+import at.fhtw.bic.ode_project.Service.GameService;
 import at.fhtw.bic.ode_project.Service.TcpService;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -9,30 +11,32 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import javafx.embed.swing.SwingFXUtils;
+
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
-public class HelloController implements ClientObserver {
+public class HelloController implements ClientObserver, GameObserver {
 
     //todo: @ewohlrab: https://stackoverflow.com/questions/36088733/smooth-path-in-javafx
     // Smoother pathing with cubicCurve
     private Logger logger = LogManager.getLogger(HelloController.class);
+
+    //###################### FXML Variablen #############################
     @FXML
     private TextArea textOutput;
     @FXML
@@ -45,15 +49,17 @@ public class HelloController implements ClientObserver {
     @FXML
     private ColorPicker colorPicker;
     @FXML
-    private ButtonBar buttonBar;
+    private HBox buttonBar;
+    @FXML
+    private Label outputWord;
 
-
-
+    //###################### Tcp Variablen #############################
     private TcpService client;
     private ExecutorService executor;
+    //###################### Event Service Variablen #############################
+    private GameService gameService;
 
-
-
+    //###################### Drawing Variablen #############################
     private boolean outOfBound = false;
     private double currentPathXPosition = 0;
     private double currentPathYPosition = 0;
@@ -103,7 +109,7 @@ public class HelloController implements ClientObserver {
             graphicsContext.stroke();
             graphicsContext.moveTo(mouseEvent.getX(), mouseEvent.getY());
             if(client.isConnected()) {
-                client.sendCommand(message, CommandEnum.DRAWING);
+                client.sendCommand(CommandEnum.DRAWING, message);
             }
             logger.trace("mouse was dragged: " + mouseEvent.getX() + "|" + mouseEvent.getY());
         }
@@ -118,7 +124,6 @@ public class HelloController implements ClientObserver {
             logger.trace("mouse was released.");
         }
     };
-
     private EventHandler<MouseEvent> mouse_exit = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent mouseEvent) {
@@ -127,7 +132,6 @@ public class HelloController implements ClientObserver {
             logger.trace("mouse is out of bound: " +  mouseEvent.getTarget().toString());
         }
     };
-
     private EventHandler<MouseEvent> mouse_enter = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent mouseEvent) {
@@ -153,7 +157,7 @@ public class HelloController implements ClientObserver {
         gc.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
         logger.debug("onGraphicClearButtonClick was clicked!");
         if(client.isConnected()) {
-            client.sendCommand("", CommandEnum.CLEAR);
+            client.sendCommand(CommandEnum.CLEAR);
         }
     }
     @FXML
@@ -188,9 +192,9 @@ public class HelloController implements ClientObserver {
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("PNG files", "*PNG");
         savefile.getExtensionFilters().add(extensionFilter);
         File file = savefile.showSaveDialog(stage);
-        logger.info("Filename: " + file.getName() + " Path:" + file.getAbsolutePath());
 
         if (file != null) {
+            logger.info("Filename: " + file.getName() + " Path:" + file.getAbsolutePath());
             try {
                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
                 canvas.snapshot(null, writableImage);
@@ -212,10 +216,13 @@ public class HelloController implements ClientObserver {
     public HelloController() {
         client = new TcpService("localhost", 8080);
         client.setClientObserver(this);
+        executor = Executors.newSingleThreadExecutor();
+
+        gameService = new GameService();
+        gameService.setTcpService(client);
     }
     @FXML
     private void initialize() {
-        executor = Executors.newSingleThreadExecutor();
     }
     public void initUI(Stage stage) {
         logger.trace("Trace Message!");
@@ -230,10 +237,8 @@ public class HelloController implements ClientObserver {
 
         graphicsContext.setLineWidth(1.0);
 
-
-
         addMouseEvents();
-        addColorPickerEvent(scene);
+        addColorPickerEvent();
 
         // Set the text enter action
         enableTextInput();
@@ -278,10 +283,10 @@ public class HelloController implements ClientObserver {
 
         canvas.removeEventFilter(MouseEvent.MOUSE_ENTERED_TARGET, mouse_enter);
     }
-    public void addColorPickerEvent(Scene scene) {
+    public void addColorPickerEvent() {
         colorPicker.setOnAction(color_set);
     }
-    public void removeColorPickerEvent(Scene scene) {
+    public void removeColorPickerEvent() {
         colorPicker.setOnAction(null);
     }
 
@@ -295,7 +300,7 @@ public class HelloController implements ClientObserver {
         if(!checkInputText(textInput.getText())) {
             textOutput.setText(textOutput.getText() + "\n" + textInput.getText());
             if(client.isConnected()) {
-                client.sendCommand(textInput.getText(), CommandEnum.MESSAGE);
+                client.sendCommand(CommandEnum.MESSAGE, textInput.getText());
             }
         }
         textInput.clear();
@@ -303,7 +308,7 @@ public class HelloController implements ClientObserver {
     private boolean checkInputText(String txt) {
         //Commands starten mit -- und sollen nicht im Textfenster ausgegeben werden
         //Command Struktur: --command:var:var:var;
-        if(!txt.startsWith("--") && txt.endsWith(";"))
+        if(!txt.startsWith("--") || !txt.endsWith(";"))
             return false;
         txt = txt.replace("-", "").replace(";", "");
         String[] commandsegments = txt.split(":");
@@ -320,25 +325,36 @@ public class HelloController implements ClientObserver {
                 } else {
                     logger.info("Starting another client not possible, client is already running!");
                 }
+                break;
             }
             case "startgame": {
-                if(client.isDisconnected()) {
-                    executor.submit(() -> client.run());
-                } else {
-                    logger.info("Starting another client not possible, client is already running!");
+                if(client.isConnected() && gameService.isInitial()) {
+                    gameService.startGame();
                 }
+                break;
+            }
+            case "beginround": {
+                if(!client.isConnected() || !gameService.isDrawer() || !gameService.isStarting()) {
+                    logger.info("Current status isConnected: " + client.isConnected()+ " isDrawer: " + gameService.isDrawer() + " isStarting: " + gameService.isStarting());
+                    break;
+                }
+                if(commandsegments.length < 2 || commandsegments[1].isEmpty() || gameService.hasWord(commandsegments[1])) {
+                    logger.info("No word or wrong word was chosen!");
+                    break;
+                }
+
+                client.sendCommand(CommandEnum.SET_DRAWER_ACKNOWLEDGEMENT, commandsegments[1]);
+
+                break;
             }
         }
-
         return true;
     }
 
-    //###################### Receive Methods #############################
+    //###################### TCP Observer Receive Methods #############################
     @Override
     public void onMessageReceive(String message) {
-        //todo Abarbeitung von erhaltenen Messages
-
-        // Abarbeitung der commands
+        // Abarbeitung der commands Message, Drawing und Clear
         // Commands sind immer 3 Zeichen lang.
         String command = message.substring(0, 3);
         logger.debug("command: " + command);
@@ -400,5 +416,39 @@ public class HelloController implements ClientObserver {
 
     public String transformColorToJavaHex(String color) {
         return "0x" + color.substring(3,9) + color.substring(1,3);
+    }
+
+    //###################### Game Observer Methods #############################
+    @Override
+    public void setGuesserMode() {
+        disableButtonBar();
+        removeMouseEvents();
+        removeColorPickerEvent();
+    }
+
+    @Override
+    public void setDrawerMode() {
+        disableTextInput();
+        enableButtonBar();
+        addMouseEvents();
+        addColorPickerEvent();
+    }
+
+    @Override
+    public void resetMode() {
+        enableButtonBar();
+        enableTextInput();
+        addMouseEvents();
+        addColorPickerEvent();
+    }
+
+    @Override
+    public void outputWords(String words) {
+        textOutput.setText(textOutput.getText() + "\n" + words);
+    }
+
+    @Override
+    public void setDisplayWord(String word) {
+        outputWord.setText(word);
     }
 }

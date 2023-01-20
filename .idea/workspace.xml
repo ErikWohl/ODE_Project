@@ -4,13 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling.">
+    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Gleichsetzung der Canvasgröße C# &amp; Java">
       <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/GameStateEnum.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/PlayerStateEnum.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameObserver.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/CommandEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/CommandEnum.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/at/fhtw/bic/ode_project/hello-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/at/fhtw/bic/ode_project/hello-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +25,7 @@
       <list>
         <option value="Tag Library Descriptor" />
         <option value="Class" />
+        <option value="Interface" />
         <option value="Enum" />
       </list>
     </option>
@@ -105,7 +109,8 @@
       <workItem from="1674050699493" duration="10014000" />
       <workItem from="1674123820380" duration="17747000" />
       <workItem from="1674145968582" duration="3624000" />
-      <workItem from="1674213925488" duration="14815000" />
+      <workItem from="1674213925488" duration="20226000" />
+      <workItem from="1674238463064" duration="10830000" />
     </task>
     <task id="LOCAL-00001" summary="Init. Fx with simple mouse detection.">
       <created>1665120516763</created>
@@ -191,7 +196,28 @@
       <option name="project" value="LOCAL" />
       <updated>1674226378000</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Anpassung der Color übergabe an C#">
+      <created>1674229779330</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1674229779330</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Anpassung der Color übergabe an C# 2">
+      <created>1674230636588</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1674230636588</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Gleichsetzung der Canvasgröße C# &amp; Java">
+      <created>1674233575444</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1674233575444</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -208,7 +234,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="master" />
+                        <option value="develop" />
                       </list>
                     </value>
                   </entry>
@@ -233,6 +259,9 @@
     <MESSAGE value="Client TCP initial command structure.&#10;Added method for multiple clients to draw together." />
     <MESSAGE value="Client TCP added command:&#10;Clear&#10;Updated draw command" />
     <MESSAGE value="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling." />
-    <option name="LAST_COMMIT_MESSAGE" value="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling." />
+    <MESSAGE value="Anpassung der Color übergabe an C#" />
+    <MESSAGE value="Anpassung der Color übergabe an C# 2" />
+    <MESSAGE value="Gleichsetzung der Canvasgröße C# &amp; Java" />
+    <option name="LAST_COMMIT_MESSAGE" value="Gleichsetzung der Canvasgröße C# &amp; Java" />
   </component>
 </project>

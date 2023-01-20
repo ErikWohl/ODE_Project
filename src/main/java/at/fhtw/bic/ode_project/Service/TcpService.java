@@ -61,7 +61,10 @@ public class TcpService implements Runnable {
 
     }
 
-    public void sendCommand(String message, CommandEnum commandEnum) {
+    public void sendCommand(CommandEnum commandEnum) {
+        sendCommand(commandEnum, "");
+    }
+    public void sendCommand(CommandEnum commandEnum, String message) {
         // Das Loglevel von drawing command ist trace!
         if(commandEnum.equals(CommandEnum.DRAWING)) {
             logger.trace("Trying to send command connection status: " + currentState);
