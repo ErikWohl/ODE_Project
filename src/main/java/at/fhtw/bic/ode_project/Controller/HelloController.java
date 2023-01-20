@@ -26,7 +26,6 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
@@ -343,7 +342,7 @@ public class HelloController implements ClientObserver, GameObserver {
                     break;
                 }
 
-                client.sendCommand(CommandEnum.SET_DRAWER_ACKNOWLEDGEMENT, commandsegments[1]);
+                client.sendCommand(CommandEnum.DRAWER_ACKNOWLEDGEMENT, commandsegments[1]);
 
                 break;
             }
