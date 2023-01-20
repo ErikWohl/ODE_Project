@@ -72,10 +72,10 @@ public class TcpService implements Runnable {
         output.println(commandEnum.getCommand() + message);
 
         if(commandEnum.equals(CommandEnum.DRAWING)) {
-            logger.trace("Command:  " + commandEnum.getCommand() + " with message: " + message + "sent. ");
+            logger.trace("Command:  " + commandEnum.getCommand() + " with message: " + message + " sent. ");
 
         } else {
-            logger.debug("Command:  " + commandEnum.getCommand() + " with message: " + message + "sent. ");
+            logger.debug("Command:  " + commandEnum.getCommand() + " with message: " + message + " sent. ");
 
         }
     }

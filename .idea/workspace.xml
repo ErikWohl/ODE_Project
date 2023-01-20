@@ -4,18 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Client TCP added command:&#10;Clear&#10;Updated draw command">
+    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling.">
       <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/GameStateEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/TcpStateEnum.java" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/CommandEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/CommandEnum.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/HelloApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/CommandEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/CommandEnum.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/at/fhtw/bic/ode_project/hello-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/at/fhtw/bic/ode_project/hello-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j2.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +105,7 @@
       <workItem from="1674050699493" duration="10014000" />
       <workItem from="1674123820380" duration="17747000" />
       <workItem from="1674145968582" duration="3624000" />
-      <workItem from="1674213925488" duration="11413000" />
+      <workItem from="1674213925488" duration="14815000" />
     </task>
     <task id="LOCAL-00001" summary="Init. Fx with simple mouse detection.">
       <created>1665120516763</created>
@@ -189,7 +184,14 @@
       <option name="project" value="LOCAL" />
       <updated>1674215624626</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling.">
+      <created>1674226378000</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1674226378000</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -230,6 +232,7 @@
     <MESSAGE value="Client TCP code refactoring. Added the option to save your drawing." />
     <MESSAGE value="Client TCP initial command structure.&#10;Added method for multiple clients to draw together." />
     <MESSAGE value="Client TCP added command:&#10;Clear&#10;Updated draw command" />
-    <option name="LAST_COMMIT_MESSAGE" value="Client TCP added command:&#10;Clear&#10;Updated draw command" />
+    <MESSAGE value="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling." />
+    <option name="LAST_COMMIT_MESSAGE" value="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling." />
   </component>
 </project>

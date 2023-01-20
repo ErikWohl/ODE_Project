@@ -30,6 +30,8 @@ import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
 public class HelloController implements ClientObserver {
 
+    //todo: @ewohlrab: https://stackoverflow.com/questions/36088733/smooth-path-in-javafx
+    // Smoother pathing with cubicCurve
     private Logger logger = LogManager.getLogger(HelloController.class);
     @FXML
     private TextArea textOutput;
@@ -79,14 +81,14 @@ public class HelloController implements ClientObserver {
             if(outOfBound) {
                 return;
             }
-            StringBuilder stringBuilder = new StringBuilder(',');
+
             String message = String.join(";",
                     String.valueOf((int)currentPathXPosition),
                     String.valueOf((int)currentPathYPosition),
                     String.valueOf((int)mouseEvent.getX()),
                     String.valueOf((int)mouseEvent.getY()),
                     String.valueOf((int)canvas.getGraphicsContext2D().getLineWidth()),
-                    ((Color)graphicsContext.getStroke()).toString()
+                    transformColorToCSharpHex(graphicsContext.getStroke().toString())
             );
 
             currentPathXPosition = mouseEvent.getX();
@@ -344,7 +346,7 @@ public class HelloController implements ClientObserver {
                 x2 = Integer.parseInt(points[2]);
                 y2 = Integer.parseInt(points[3]);
                 size = Integer.parseInt(points[4]);
-                Color color = Color.valueOf(points[5]);
+                Color color = Color.valueOf(transformColorToJavaHex(points[5]));
                 drawLine(x1,y1,x2,y2, size, color);
 
                 break;
@@ -363,7 +365,7 @@ public class HelloController implements ClientObserver {
         textOutput.setText(textOutput.getText() + "\n" + message);
     }
 
-    //###################### Receive Methods #############################
+    //###################### Transformation Methods #############################
 
     public void drawLine(int x1, int y1, int x2, int y2, int size, Color color) {
         var gc = canvas.getGraphicsContext2D();
@@ -379,5 +381,13 @@ public class HelloController implements ClientObserver {
 
         gc.setStroke(c);
         canvas.getGraphicsContext2D().setLineWidth(s);
+    }
+
+    public String transformColorToCSharpHex(String color) {
+        return color.substring(8) + color.substring(2,8);
+    }
+
+    public String transformColorToJavaHex(String color) {
+        return "0x" + color.substring(2,8) + color.substring(0,2);
     }
 }
