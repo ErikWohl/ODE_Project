@@ -53,12 +53,15 @@ public class HelloController implements ClientObserver {
     protected void onGraphicClearButtonClick() {
         var gc = canvas.getGraphicsContext2D();
         gc.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
-        logger.debug("Button was clicked!");
+        logger.debug("onGraphicClearButtonClick was clicked!");
+        if(client.isStarted()) {
+            client.sendCommand("", CommandEnum.CLEAR);
+        }
     }
     @FXML
     protected void onTextClearButtonClick() {
         textOutput.clear();
-        logger.debug("Button was clicked!");
+        logger.debug("onTextClearButtonClick was clicked!");
     }
     @FXML
     protected void onStrokeIncreaseButtonClick() {
@@ -164,7 +167,9 @@ public class HelloController implements ClientObserver {
                             String.valueOf((int)currentPathXPosition),
                             String.valueOf((int)currentPathYPosition),
                             String.valueOf((int)mouseEvent.getX()),
-                            String.valueOf((int)mouseEvent.getY())
+                            String.valueOf((int)mouseEvent.getY()),
+                            String.valueOf((int)canvas.getGraphicsContext2D().getLineWidth()),
+                            ((Color)gc.getStroke()).toString()
                             );
 
                     currentPathXPosition = mouseEvent.getX();
@@ -289,15 +294,21 @@ public class HelloController implements ClientObserver {
             case DRAWING: {
                 String[] points = message.substring(3).split(";");
                 // Da WPF keine double Koordinaten besitzt machen wir int
-                int x1,x2,y1,y2;
+                int x1,x2,y1,y2, size;
                 x1 = Integer.parseInt(points[0]);
                 y1 = Integer.parseInt(points[1]);
                 x2 = Integer.parseInt(points[2]);
                 y2 = Integer.parseInt(points[3]);
-
-                drawLine(x1,y1,x2,y2);
+                size = Integer.parseInt(points[4]);
+                Color color = Color.valueOf(points[5]);
+                drawLine(x1,y1,x2,y2, size, color);
 
                 break;
+            }
+            case CLEAR: {
+                var gc = canvas.getGraphicsContext2D();
+                gc.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
+                logger.debug("Graphic was cleared.");
             }
         }
     }
@@ -310,8 +321,19 @@ public class HelloController implements ClientObserver {
 
     //###################### Receive Methods #############################
 
-    public void drawLine(int x1, int y1, int x2, int y2) {
+    public void drawLine(int x1, int y1, int x2, int y2, int size, Color color) {
         var gc = canvas.getGraphicsContext2D();
+        // Current values, will be set again after the line was drawn
+        Color c = (Color) gc.getStroke();
+        int s = (int)canvas.getGraphicsContext2D().getLineWidth();
+
+        gc.setStroke(color);
+        canvas.getGraphicsContext2D().setLineWidth(size);
+
         gc.strokeLine(x1, y1,x2,y2);
+
+
+        gc.setStroke(c);
+        canvas.getGraphicsContext2D().setLineWidth(s);
     }
 }

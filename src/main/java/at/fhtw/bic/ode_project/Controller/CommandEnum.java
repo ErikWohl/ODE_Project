@@ -2,7 +2,8 @@ package at.fhtw.bic.ode_project.Controller;
 
 public enum CommandEnum {
     MESSAGE("MSG"),
-    DRAWING("DRW");
+    DRAWING("DRW"),
+    CLEAR("CLR");
 
     public final String command;
     private CommandEnum(String command) {

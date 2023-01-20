@@ -55,7 +55,7 @@ public class TcpService implements Runnable {
     public void sendCommand(String message, CommandEnum commandEnum) {
         logger.debug("Trying to send command connection status: " + started);
         output.println(commandEnum.getCommand() + message);
-        logger.debug("Command:  " + message + "sent. ");
+        logger.debug("Command:  " + commandEnum.getCommand() + " with message: " + message + "sent. ");
     }
 
     @Override

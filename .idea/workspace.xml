@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Client TCP code refactoring. Added the option to save your drawing.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/CommandEnum.java" afterDir="false" />
+    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Client TCP initial command structure.&#10;Added method for multiple clients to draw together.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/CommandEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/CommandEnum.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" afterDir="false" />
     </list>
@@ -102,7 +102,8 @@
       <workItem from="1673377389019" duration="92000" />
       <workItem from="1674050699493" duration="10014000" />
       <workItem from="1674123820380" duration="17747000" />
-      <workItem from="1674145968582" duration="2990000" />
+      <workItem from="1674145968582" duration="3624000" />
+      <workItem from="1674213925488" duration="1393000" />
     </task>
     <task id="LOCAL-00001" summary="Init. Fx with simple mouse detection.">
       <created>1665120516763</created>
@@ -167,7 +168,14 @@
       <option name="project" value="LOCAL" />
       <updated>1674140621669</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Client TCP initial command structure.&#10;Added method for multiple clients to draw together.">
+      <created>1674149618935</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1674149618935</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -206,6 +214,7 @@
     <MESSAGE value="Simple initial TCP Client implementation" />
     <MESSAGE value="Added logging for the client" />
     <MESSAGE value="Client TCP code refactoring. Added the option to save your drawing." />
-    <option name="LAST_COMMIT_MESSAGE" value="Client TCP code refactoring. Added the option to save your drawing." />
+    <MESSAGE value="Client TCP initial command structure.&#10;Added method for multiple clients to draw together." />
+    <option name="LAST_COMMIT_MESSAGE" value="Client TCP initial command structure.&#10;Added method for multiple clients to draw together." />
   </component>
 </project>
