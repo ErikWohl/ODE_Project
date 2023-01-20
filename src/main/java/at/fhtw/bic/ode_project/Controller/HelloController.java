@@ -82,6 +82,10 @@ public class HelloController implements ClientObserver {
                 return;
             }
 
+            //logger.debug("Initial value: " + graphicsContext.getStroke().toString());
+            //logger.debug("Initial value: " + transformColorToCSharpHex(graphicsContext.getStroke().toString()));
+            //logger.debug("Initial value: " + transformColorToJavaHex(transformColorToCSharpHex(graphicsContext.getStroke().toString())));
+
             String message = String.join(";",
                     String.valueOf((int)currentPathXPosition),
                     String.valueOf((int)currentPathYPosition),
@@ -299,7 +303,7 @@ public class HelloController implements ClientObserver {
     private boolean checkInputText(String txt) {
         //Commands starten mit -- und sollen nicht im Textfenster ausgegeben werden
         //Command Struktur: --command:var:var:var;
-        if(!txt.startsWith("--") && !txt.endsWith(";"))
+        if(!txt.startsWith("--") && txt.endsWith(";"))
             return false;
         txt = txt.replace("-", "").replace(";", "");
         String[] commandsegments = txt.split(":");
@@ -311,6 +315,13 @@ public class HelloController implements ClientObserver {
                 break;
             }
             case "startclient": {
+                if(client.isDisconnected()) {
+                    executor.submit(() -> client.run());
+                } else {
+                    logger.info("Starting another client not possible, client is already running!");
+                }
+            }
+            case "startgame": {
                 if(client.isDisconnected()) {
                     executor.submit(() -> client.run());
                 } else {
@@ -384,10 +395,10 @@ public class HelloController implements ClientObserver {
     }
 
     public String transformColorToCSharpHex(String color) {
-        return color.substring(8) + color.substring(2,8);
+        return "#" + color.substring(8) + color.substring(2,8);
     }
 
     public String transformColorToJavaHex(String color) {
-        return "0x" + color.substring(2,8) + color.substring(0,2);
+        return "0x" + color.substring(3,9) + color.substring(1,3);
     }
 }
