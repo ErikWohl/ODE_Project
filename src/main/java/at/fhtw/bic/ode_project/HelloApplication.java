@@ -29,7 +29,7 @@ public class HelloApplication extends Application {
         controller.setStage(stage);
         controller.initUI(stage);
     }
-    //todo: https://docs.oracle.com/javafx/2/events/filters.htm
+    // todo: https://docs.oracle.com/javafx/2/events/filters.htm
     // https://stackoverflow.com/questions/46649406/custom-javafx-events
     // https://docs.oracle.com/javafx/2/events/processing.htm
 
