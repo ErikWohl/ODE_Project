@@ -21,13 +21,13 @@
       <right>
          <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="300.0" BorderPane.alignment="CENTER">
             <items>
-               <TextArea fx:id="textOutput" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;" />
-               <TextField fx:id="textInput" onAction="#onEnterText" style="-fx-border-color: black;" />
+               <TextArea fx:id="textOutput" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;" wrapText="true" />
+               <TextField fx:id="textInput" editable="false" style="-fx-border-color: black;" />
             </items>
          </SplitPane>
       </right>
       <bottom>
-         <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <ButtonBar fx:id="buttonBar" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
            <buttons>
              <Button fx:id="textClearButton" mnemonicParsing="false" onAction="#onTextClearButtonClick" text="Clear Text" />
                  <Button fx:id="graphicClearButton" minHeight="20.0" minWidth="100.0" onAction="#onGraphicClearButtonClick" text="Clear Graphic" textAlignment="CENTER" />

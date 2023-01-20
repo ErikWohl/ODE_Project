@@ -24,14 +24,9 @@ public class HelloApplication extends Application {
 
 
         Scene scene = new Scene(root);
-        controller.setScene(scene);
-        controller.setStage(stage);
-        stage.setTitle("Skribbl.io");
         stage.setScene(scene);
-        stage.show();
 
-
-
+        controller.setStage(stage);
         controller.initUI(stage);
     }
     //todo: https://docs.oracle.com/javafx/2/events/filters.htm

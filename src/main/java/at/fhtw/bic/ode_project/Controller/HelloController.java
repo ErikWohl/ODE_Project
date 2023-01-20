@@ -1,5 +1,6 @@
 package at.fhtw.bic.ode_project.Controller;
 
+import at.fhtw.bic.ode_project.Enums.CommandEnum;
 import at.fhtw.bic.ode_project.Service.ClientObserver;
 import at.fhtw.bic.ode_project.Service.TcpService;
 import javafx.event.ActionEvent;
@@ -7,6 +8,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -29,24 +32,113 @@ public class HelloController implements ClientObserver {
 
     private Logger logger = LogManager.getLogger(HelloController.class);
     @FXML
-    private Canvas canvas;
-    @FXML
     private TextArea textOutput;
     @FXML
     private TextField textInput;
-    private Scene scene;
     private Stage stage;
+    private Scene scene;
+    @FXML
+    private Canvas canvas;
+    private GraphicsContext graphicsContext;
+    @FXML
+    private ColorPicker colorPicker;
+    @FXML
+    private ButtonBar buttonBar;
+
+
+
     private TcpService client;
+    private ExecutorService executor;
+
+
+
     private boolean outOfBound = false;
     private double currentPathXPosition = 0;
     private double currentPathYPosition = 0;
-
-    public void setScene(Scene scene) {
-        this.scene = scene;
-    }
     public void setStage(Stage stage) {
         this.stage = stage;
     }
+
+    //###################### EventHandler Methods #############################
+
+    private EventHandler<MouseEvent> mouse_pressed = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            if(outOfBound) {
+                return;
+            }
+            graphicsContext.beginPath();
+            currentPathXPosition = mouseEvent.getX();
+            currentPathYPosition = mouseEvent.getY();
+            logger.trace("mouse was pressed.");
+        }
+    };
+    private EventHandler<MouseEvent> mouse_dragged = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            if(outOfBound) {
+                return;
+            }
+            StringBuilder stringBuilder = new StringBuilder(',');
+            String message = String.join(";",
+                    String.valueOf((int)currentPathXPosition),
+                    String.valueOf((int)currentPathYPosition),
+                    String.valueOf((int)mouseEvent.getX()),
+                    String.valueOf((int)mouseEvent.getY()),
+                    String.valueOf((int)canvas.getGraphicsContext2D().getLineWidth()),
+                    ((Color)graphicsContext.getStroke()).toString()
+            );
+
+            currentPathXPosition = mouseEvent.getX();
+            currentPathYPosition = mouseEvent.getY();
+
+
+            graphicsContext.lineTo(mouseEvent.getX(), mouseEvent.getY());
+            graphicsContext.stroke();
+            graphicsContext.moveTo(mouseEvent.getX(), mouseEvent.getY());
+            if(client.isConnected()) {
+                client.sendCommand(message, CommandEnum.DRAWING);
+            }
+            logger.trace("mouse was dragged: " + mouseEvent.getX() + "|" + mouseEvent.getY());
+        }
+    };
+    private EventHandler<MouseEvent> mouse_release = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            if(outOfBound) {
+                return;
+            }
+            graphicsContext.closePath();
+            logger.trace("mouse was released.");
+        }
+    };
+
+    private EventHandler<MouseEvent> mouse_exit = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            graphicsContext.closePath();
+            outOfBound = true;
+            logger.trace("mouse is out of bound: " +  mouseEvent.getTarget().toString());
+        }
+    };
+
+    private EventHandler<MouseEvent> mouse_enter = new EventHandler<MouseEvent>() {
+        @Override
+        public void handle(MouseEvent mouseEvent) {
+            graphicsContext.beginPath();
+            outOfBound = false;
+            logger.trace("mouse is in bound: " +  mouseEvent.getTarget().toString());
+        }
+    };
+    private EventHandler<ActionEvent> color_set = new EventHandler<ActionEvent>() {
+        public void handle(ActionEvent e)
+        {
+            // color
+            Color c = colorPicker.getValue();
+            logger.debug("Stroke color was set to " + c.toString());
+            graphicsContext.setStroke(c);
+        }
+    };
 
     //###################### ButtonClick Methods #############################
     @FXML
@@ -54,7 +146,7 @@ public class HelloController implements ClientObserver {
         var gc = canvas.getGraphicsContext2D();
         gc.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
         logger.debug("onGraphicClearButtonClick was clicked!");
-        if(client.isStarted()) {
+        if(client.isConnected()) {
             client.sendCommand("", CommandEnum.CLEAR);
         }
     }
@@ -117,6 +209,7 @@ public class HelloController implements ClientObserver {
     }
     @FXML
     private void initialize() {
+        executor = Executors.newSingleThreadExecutor();
     }
     public void initUI(Stage stage) {
         logger.trace("Trace Message!");
@@ -126,117 +219,64 @@ public class HelloController implements ClientObserver {
         logger.error("Error Message!");
         logger.fatal("Fatal Message!");
 
-        var scene = stage.getScene();
+        scene = stage.getScene();
+        graphicsContext = canvas.getGraphicsContext2D();
 
-        addMouseEvents(scene);
+        graphicsContext.setLineWidth(1.0);
+
+
+
+        addMouseEvents();
         addColorPickerEvent(scene);
 
-        stage.setScene(scene);
+        // Set the text enter action
+        enableTextInput();
+        enableButtonBar();
+
+        stage.setTitle("Skribbl.io");
         stage.show();
     }
-    public void addMouseEvents(Scene scene) {
-        var canvas = (Canvas) scene.lookup("#canvas");
-        var gc = canvas.getGraphicsContext2D();
-        var textOutput = (TextArea) scene.lookup("#textOutput");
-        gc.setLineWidth(1.0);
-        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if(outOfBound) {
-                    return;
-                }
+    public void enableTextInput() {
+        textInput.setOnAction(e -> onEnterText());
+        textInput.setEditable(true);
+    }
+    public void disableTextInput() {
+        textInput.setOnAction(null);
+        textInput.setEditable(false);
+    }
+    public void enableButtonBar() {
+        buttonBar.setDisable(false);
+    }
+    public void disableButtonBar() {
+        buttonBar.setDisable(true);
+    }
+    public void addMouseEvents() {
+        canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, mouse_pressed);
 
-                if(mouseEvent.getTarget() instanceof Canvas) {
-                    gc.beginPath();
-                    currentPathXPosition = mouseEvent.getX();
-                    currentPathYPosition = mouseEvent.getY();
-                    logger.trace("mouse was pressed.");
-                }
-            }
-        });
+        canvas.addEventFilter(MouseEvent.MOUSE_DRAGGED, mouse_dragged);
 
-        scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if(outOfBound) {
-                    return;
-                }
-                if(mouseEvent.getTarget() instanceof Canvas) {
-                    StringBuilder stringBuilder = new StringBuilder(',');
-                    String message = String.join(";",
-                            String.valueOf((int)currentPathXPosition),
-                            String.valueOf((int)currentPathYPosition),
-                            String.valueOf((int)mouseEvent.getX()),
-                            String.valueOf((int)mouseEvent.getY()),
-                            String.valueOf((int)canvas.getGraphicsContext2D().getLineWidth()),
-                            ((Color)gc.getStroke()).toString()
-                            );
+        canvas.addEventFilter(MouseEvent.MOUSE_RELEASED, mouse_release);
 
-                    currentPathXPosition = mouseEvent.getX();
-                    currentPathYPosition = mouseEvent.getY();
+        canvas.addEventFilter(MouseEvent.MOUSE_EXITED_TARGET, mouse_exit);
 
+        canvas.addEventFilter(MouseEvent.MOUSE_ENTERED_TARGET, mouse_enter);
+    }
+    public void removeMouseEvents() {
+        canvas.removeEventFilter(MouseEvent.MOUSE_PRESSED, mouse_pressed);
 
-                    gc.lineTo(mouseEvent.getX(), mouseEvent.getY());
-                    gc.stroke();
-                    gc.moveTo(mouseEvent.getX(), mouseEvent.getY());
-                    if(client.isStarted()) {
-                        client.sendCommand(message, CommandEnum.DRAWING);
-                    }
-                    logger.trace("mouse was dragged: " + mouseEvent.getX() + "|" + mouseEvent.getY());
-                }
-            }
-        });
+        canvas.removeEventFilter(MouseEvent.MOUSE_DRAGGED, mouse_dragged);
 
-        scene.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if(outOfBound) {
-                    return;
-                }
+        canvas.removeEventFilter(MouseEvent.MOUSE_RELEASED, mouse_release);
 
-                if(mouseEvent.getTarget() instanceof Canvas) {
-                    gc.closePath();
-                    logger.trace("mouse was released.");
-                }
-            }
-        });
+        canvas.removeEventFilter(MouseEvent.MOUSE_EXITED_TARGET, mouse_exit);
 
-        scene.addEventFilter(MouseEvent.MOUSE_EXITED_TARGET, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                gc.closePath();
-                outOfBound = true;
-                logger.trace("mouse is out of bound: " +  mouseEvent.getTarget().toString());
-            }
-        });
-        scene.addEventFilter(MouseEvent.MOUSE_ENTERED_TARGET, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                gc.beginPath();
-                outOfBound = false;
-                logger.trace("mouse is in bound: " +  mouseEvent.getTarget().toString());
-            }
-        });
+        canvas.removeEventFilter(MouseEvent.MOUSE_ENTERED_TARGET, mouse_enter);
     }
     public void addColorPickerEvent(Scene scene) {
-        var canvas = (Canvas) scene.lookup("#canvas");
-        var gc = canvas.getGraphicsContext2D();
-        //Colorpicker
-        var colorPicker = (ColorPicker) scene.lookup("#colorPicker");
-
-        // create an event handler
-        EventHandler<ActionEvent> event = new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent e)
-            {
-                // color
-                Color c = colorPicker.getValue();
-                logger.debug("Stroke color was set to " + c.toString());
-                gc.setStroke(c);
-            }
-        };
-
-        // set listener
-        colorPicker.setOnAction(event);
+        colorPicker.setOnAction(color_set);
+    }
+    public void removeColorPickerEvent(Scene scene) {
+        colorPicker.setOnAction(null);
     }
 
     //###################### Send Methods #############################
@@ -248,7 +288,7 @@ public class HelloController implements ClientObserver {
 
         if(!checkInputText(textInput.getText())) {
             textOutput.setText(textOutput.getText() + "\n" + textInput.getText());
-            if(client.isStarted()) {
+            if(client.isConnected()) {
                 client.sendCommand(textInput.getText(), CommandEnum.MESSAGE);
             }
         }
@@ -264,12 +304,16 @@ public class HelloController implements ClientObserver {
 
         switch (commandsegments[0]) {
             case "sethost": {
+                logger.info("Host set to: " + commandsegments[1] + ":" + commandsegments);
                 client.setSocketAddress(new InetSocketAddress(commandsegments[1], Integer.parseInt(commandsegments[2])));
                 break;
             }
             case "startclient": {
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.submit(() -> client.run());
+                if(client.isDisconnected()) {
+                    executor.submit(() -> client.run());
+                } else {
+                    logger.info("Starting another client not possible, client is already running!");
+                }
             }
         }
 
