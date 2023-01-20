@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<Pane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bic.ode_project.Controller.HelloController">
+<Pane minHeight="600.0" minWidth="1000.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bic.ode_project.Controller.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -14,15 +14,15 @@
       <center>
          <Pane style="-fx-border-color: black;" BorderPane.alignment="CENTER">
             <children>
-                 <Canvas fx:id="canvas" height="300" width="300" />
+                 <Canvas fx:id="canvas" height="500" width="500" />
             </children>
          </Pane>
       </center>
       <right>
-         <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+         <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="300.0" BorderPane.alignment="CENTER">
             <items>
-               <TextArea fx:id="textOutput" editable="false" prefHeight="200.0" prefWidth="200.0" />
-               <TextField fx:id="textInput" onAction="#onEnterText" />
+               <TextArea fx:id="textOutput" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;" />
+               <TextField fx:id="textInput" onAction="#onEnterText" style="-fx-border-color: black;" />
             </items>
          </SplitPane>
       </right>
@@ -38,6 +38,7 @@
                </ColorPicker>
                <Button fx:id="strokeIncreaseButton" mnemonicParsing="false" onAction="#onStrokeIncreaseButtonClick" text="Increase stroke size" />
                <Button fx:id="strokeDecreaseButton" mnemonicParsing="false" onAction="#onStrokeDecreaseButtonClick" text="Decrease stroke size" />
+               <Button fx:id="saveImageButton" mnemonicParsing="false" onAction="#onSaveImageButtonClick" text="Save Image" />
            </buttons>
          </ButtonBar>
       </bottom>
