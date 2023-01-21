@@ -297,7 +297,7 @@ public class HelloController implements ClientObserver, GameObserver {
         logger.info("Entered text: " + textInput.getText());
 
         if(!checkInputText(textInput.getText())) {
-            textOutput.setText(textOutput.getText() + "\n" + textInput.getText());
+            addTextToOutput(textInput.getText());
             if(client.isConnected()) {
                 client.sendCommand(CommandEnum.MESSAGE, textInput.getText());
             }
@@ -307,8 +307,16 @@ public class HelloController implements ClientObserver, GameObserver {
     private boolean checkInputText(String txt) {
         //Commands starten mit -- und sollen nicht im Textfenster ausgegeben werden
         //Command Struktur: --command:var:var:var;
-        if(!txt.startsWith("--") || !txt.endsWith(";"))
+        if(!txt.startsWith("--") && !txt.endsWith(";"))
             return false;
+
+        if(!txt.startsWith("--") || !txt.endsWith(";")) {
+            addTextToOutput("Wrong commandstructure!");
+            addTextToOutput("--command:values; or --command;");
+            return true;
+        }
+
+
         txt = txt.replace("-", "").replace(";", "");
         String[] commandsegments = txt.split(":");
 
@@ -333,17 +341,12 @@ public class HelloController implements ClientObserver, GameObserver {
                 break;
             }
             case "beginround": {
-                if(!client.isConnected() || !gameService.isDrawer() || !gameService.isStarting()) {
-                    logger.info("Current status isConnected: " + client.isConnected()+ " isDrawer: " + gameService.isDrawer() + " isStarting: " + gameService.isStarting());
-                    break;
-                }
                 if(commandsegments.length < 2 || commandsegments[1].isEmpty() || gameService.hasWord(commandsegments[1])) {
                     logger.info("No word or wrong word was chosen!");
                     break;
                 }
 
-                client.sendCommand(CommandEnum.DRAWER_ACKNOWLEDGEMENT, commandsegments[1]);
-
+                gameService.drawerAcknowledge(commandsegments[1]);
                 break;
             }
         }
@@ -360,7 +363,7 @@ public class HelloController implements ClientObserver, GameObserver {
         CommandEnum commandEnum = CommandEnum.fromString(command);
         switch (commandEnum) {
             case MESSAGE: {
-                textOutput.setText(textOutput.getText() + "\n" + message.substring(3));
+                addTextToOutput(message.substring(3));
                 break;
             }
             case DRAWING: {
@@ -387,7 +390,11 @@ public class HelloController implements ClientObserver, GameObserver {
     @Override
     public void onDebugMessage(String message) {
         //todo Abarbeitung von debug Messages
+        addTextToOutput(message);
+    }
 
+    //###################### Text Methods #############################
+    public void addTextToOutput(String message) {
         textOutput.setText(textOutput.getText() + "\n" + message);
     }
 
@@ -443,7 +450,7 @@ public class HelloController implements ClientObserver, GameObserver {
 
     @Override
     public void outputWords(String words) {
-        textOutput.setText(textOutput.getText() + "\n" + words);
+        addTextToOutput(words);
     }
 
     @Override

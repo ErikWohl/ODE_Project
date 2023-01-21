@@ -52,8 +52,18 @@ public class GameService implements ClientObserver {
     }
     public void startGame() {
         if(tcpService.isConnected()) {
+            logger.info("Starting another client not possible, client is already running!");
             tcpService.sendCommand(CommandEnum.START_GAME_REQUEST);
         }
+    }
+
+    public void drawerAcknowledge(String word) {
+        if(!tcpService.isConnected() || !isDrawer() || !isStarting()) {
+            logger.info("Current status isConnected: " + tcpService.isConnected()+ " isDrawer: " + isDrawer() + " isStarting: " + isStarting());
+            return;
+        }
+        logger.info("Drawer chose word and send acknowledgement.");
+        tcpService.sendCommand(CommandEnum.DRAWER_ACKNOWLEDGEMENT, chosenWord);
     }
 
     @Override
