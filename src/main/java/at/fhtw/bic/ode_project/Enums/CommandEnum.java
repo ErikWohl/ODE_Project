@@ -1,4 +1,4 @@
-package at.fhtw.bic.ode_project.Controller;
+package at.fhtw.bic.ode_project.Enums;
 
 public enum CommandEnum {
     MESSAGE("MSG"),
