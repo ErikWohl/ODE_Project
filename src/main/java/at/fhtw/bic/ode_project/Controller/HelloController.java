@@ -5,6 +5,7 @@ import at.fhtw.bic.ode_project.Service.ClientObserver;
 import at.fhtw.bic.ode_project.Service.GameObserver;
 import at.fhtw.bic.ode_project.Service.GameService;
 import at.fhtw.bic.ode_project.Service.TcpService;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,10 +19,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import javafx.embed.swing.SwingFXUtils;
-
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +69,13 @@ public class HelloController implements ClientObserver, GameObserver {
 
     //###################### EventHandler Methods #############################
 
+    private EventHandler<WindowEvent> window_close = new EventHandler<WindowEvent>() {
+        @Override
+        public void handle(WindowEvent event) {
+            Platform.exit();
+            System.exit(0);
+        }
+    };
     private EventHandler<MouseEvent> mouse_pressed = new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent mouseEvent) {
@@ -232,6 +240,9 @@ public class HelloController implements ClientObserver, GameObserver {
         logger.fatal("Fatal Message!");
 
         scene = stage.getScene();
+
+        stage.setOnCloseRequest(window_close);
+
         graphicsContext = canvas.getGraphicsContext2D();
 
         graphicsContext.setLineWidth(1.0);
