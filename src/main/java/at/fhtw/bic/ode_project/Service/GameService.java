@@ -21,8 +21,6 @@ public class GameService implements ClientObserver {
     private List<String> words;
     private String chosenWord = "";
 
-    public void GameService() {
-    }
     public void setTcpService(TcpService tcpService) {
         this.tcpService = tcpService;
     }
@@ -74,6 +72,19 @@ public class GameService implements ClientObserver {
         logger.debug("command: " + command);
         CommandEnum commandEnum = CommandEnum.fromString(command);
         switch (commandEnum) {
+            case MESSAGE: {
+                gameObserver.outputWords(message.substring(3));
+                break;
+            }
+            case DRAWING: {
+                gameObserver.transformMessageToLine(message);
+                break;
+            }
+            case CLEAR: {
+                gameObserver.clearCanvas();
+                break;
+            }
+
             // Erster State, falls noch nichts gestartet ist
             // wird hier überprüft, ob jemand eine falsche state hat
             case START_GAME_REQUEST: {
@@ -180,6 +191,8 @@ public class GameService implements ClientObserver {
     public void onDebugMessage(String message) {
         // Debug message wird nur aufgerufen, wenn es zu TCP Serverproblemen kommt
         // Wir setzen hier einfach preventiv den GameService und HelloController zurück
+        gameObserver.outputWords(message);
+
         gameState = GameStateEnum.INITIAL;
         playerState = PlayerStateEnum.NONE;
         words = null;

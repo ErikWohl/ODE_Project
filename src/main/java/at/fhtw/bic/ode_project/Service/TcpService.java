@@ -22,11 +22,10 @@ public class TcpService implements Runnable {
     private BufferedReader input;
     private PrintWriter output;
 
-    private List<ClientObserver> clientObserverList;
+    private ClientObserver clientObserver;
     private TcpStateEnum currentState = TcpStateEnum.DISCONNETED;
     public TcpService(String iPAddress, int port) {
         this.socketAddress = new InetSocketAddress(iPAddress, port);
-        this.clientObserverList = new ArrayList<>();
     }
 
     public Socket getClientSocket() {
@@ -41,8 +40,8 @@ public class TcpService implements Runnable {
         this.socketAddress = socketAddress;
     }
 
-    public void addClientObserver(ClientObserver clientObserver) {
-        clientObserverList.add(clientObserver);
+    public void setClientObserver(ClientObserver clientObserver) {
+        this.clientObserver = clientObserver;
     }
     public boolean isDisconnected() {
         return currentState == TcpStateEnum.DISCONNETED;
@@ -54,17 +53,6 @@ public class TcpService implements Runnable {
 
     public boolean isConnected() {
         return currentState == TcpStateEnum.CONNECTED;
-    }
-
-    private void sendReceivedMessageToObservers(String message) {
-        for(var observer : clientObserverList) {
-            observer.onMessageReceive(message);
-        }
-    }
-    private void sendDebugMessageToObservers(String message) {
-        for(var observer : clientObserverList) {
-            observer.onDebugMessage(message);
-        }
     }
 
     public void sendCommand(CommandEnum commandEnum) {
@@ -114,7 +102,8 @@ public class TcpService implements Runnable {
             } while(true);
         } catch (NumberOfRetriesExceededException e) {
             logger.info("Max number of tries reached.");
-            sendDebugMessageToObservers("Verbindung mit Server ist fehlgeschlagen!");
+            clientObserver.onDebugMessage("Verbindung mit Server ist fehlgeschlagen!");
+
             lock.writeLock().lock();
             try {
                 currentState = TcpStateEnum.DISCONNETED;
@@ -150,10 +139,10 @@ public class TcpService implements Runnable {
             do {
                 String message = input.readLine();
                 logger.trace("Received message: " + message);
-                sendReceivedMessageToObservers(message);
+                clientObserver.onMessageReceive(message);
             } while (true);
         } catch (IOException e) {
-            sendDebugMessageToObservers("Server disconnected, while receiving message!");
+            clientObserver.onDebugMessage("Server disconnected, while receiving message!");
             logger.error("Server disconnected, while receiving message!");
             ReadWriteLock lock = new ReentrantReadWriteLock();
             lock.writeLock().lock();

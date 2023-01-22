@@ -30,7 +30,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
-public class HelloController implements ClientObserver, GameObserver {
+public class HelloController implements GameObserver {
 
     //todo: @ewohlrab: https://stackoverflow.com/questions/36088733/smooth-path-in-javafx
     // Smoother pathing with cubicCurve
@@ -222,12 +222,11 @@ public class HelloController implements ClientObserver, GameObserver {
 
     public HelloController() {
         client = new TcpService("localhost", 8080);
-        client.addClientObserver(this);
         executor = Executors.newSingleThreadExecutor();
 
         gameService = new GameService();
         gameService.setTcpService(client);
-        client.addClientObserver(gameService);
+        client.setClientObserver(gameService);
         gameService.setGameObserver(this);
     }
     @FXML
@@ -381,74 +380,33 @@ public class HelloController implements ClientObserver, GameObserver {
     }
 
     //###################### TCP Observer Receive Methods #############################
-    @Override
-    public void onMessageReceive(String message) {
-        // Abarbeitung der commands Message, Drawing und Clear
-        // Commands sind immer 3 Zeichen lang.
-        String command = message.substring(0, 3);
-        logger.debug("command: " + command);
-        CommandEnum commandEnum = CommandEnum.fromString(command);
-        switch (commandEnum) {
-            case MESSAGE: {
-                addTextToOutput(message.substring(3));
-                break;
-            }
-            case DRAWING: {
-                String[] points = message.substring(3).split(";");
-                // Da WPF keine double Koordinaten besitzt machen wir int
-                int x1,x2,y1,y2, size;
-                x1 = Integer.parseInt(points[0]);
-                y1 = Integer.parseInt(points[1]);
-                x2 = Integer.parseInt(points[2]);
-                y2 = Integer.parseInt(points[3]);
-                size = Integer.parseInt(points[4]);
-                Color color = Color.valueOf(transformColorToJavaHex(points[5]));
-                drawLine(x1,y1,x2,y2, size, color);
 
-                break;
-            }
-            case CLEAR: {
-                var gc = canvas.getGraphicsContext2D();
-                gc.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
-                logger.debug("Graphic was cleared.");
-            }
-        }
+    //###################### Line Methods #############################
+
+    public void drawLine(int x1, int y1, int x2, int y2, int size, Color color) {
+        // Current values, will be set again after the line was drawn
+        Color c = (Color) graphicsContext.getStroke();
+        int s = (int)canvas.getGraphicsContext2D().getLineWidth();
+
+        graphicsContext.setStroke(color);
+        canvas.getGraphicsContext2D().setLineWidth(size);
+
+        graphicsContext.strokeLine(x1, y1,x2,y2);
+
+
+        graphicsContext.setStroke(c);
+        canvas.getGraphicsContext2D().setLineWidth(s);
     }
-    @Override
-    public void onDebugMessage(String message) {
-        //todo Abarbeitung von debug Messages
-        addTextToOutput(message);
+    public String transformColorToCSharpHex(String color) {
+        return "#" + color.substring(8) + color.substring(2,8);
+    }
+    public String transformColorToJavaHex(String color) {
+        return "0x" + color.substring(3,9) + color.substring(1,3);
     }
 
     //###################### Text Methods #############################
     public void addTextToOutput(String message) {
         textOutput.setText(textOutput.getText() + "\n" + message);
-    }
-
-    //###################### Transformation Methods #############################
-
-    public void drawLine(int x1, int y1, int x2, int y2, int size, Color color) {
-        var gc = canvas.getGraphicsContext2D();
-        // Current values, will be set again after the line was drawn
-        Color c = (Color) gc.getStroke();
-        int s = (int)canvas.getGraphicsContext2D().getLineWidth();
-
-        gc.setStroke(color);
-        canvas.getGraphicsContext2D().setLineWidth(size);
-
-        gc.strokeLine(x1, y1,x2,y2);
-
-
-        gc.setStroke(c);
-        canvas.getGraphicsContext2D().setLineWidth(s);
-    }
-
-    public String transformColorToCSharpHex(String color) {
-        return "#" + color.substring(8) + color.substring(2,8);
-    }
-
-    public String transformColorToJavaHex(String color) {
-        return "0x" + color.substring(3,9) + color.substring(1,3);
     }
 
     //###################### Game Observer Methods #############################
@@ -483,5 +441,25 @@ public class HelloController implements ClientObserver, GameObserver {
     @Override
     public void setDisplayWord(String word) {
         Platform.runLater(() -> outputWord.setText(word));
+    }
+
+    @Override
+    public void clearCanvas() {
+        graphicsContext.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
+        logger.debug("Graphic was cleared.");
+    }
+
+    @Override
+    public void transformMessageToLine(String message) {
+        String[] points = message.substring(3).split(";");
+        // Da WPF keine double Koordinaten besitzt machen wir int
+        int x1,x2,y1,y2, size;
+        x1 = Integer.parseInt(points[0]);
+        y1 = Integer.parseInt(points[1]);
+        x2 = Integer.parseInt(points[2]);
+        y2 = Integer.parseInt(points[3]);
+        size = Integer.parseInt(points[4]);
+        Color color = Color.valueOf(transformColorToJavaHex(points[5]));
+        drawLine(x1,y1,x2,y2, size, color);;
     }
 }
