@@ -222,11 +222,13 @@ public class HelloController implements ClientObserver, GameObserver {
 
     public HelloController() {
         client = new TcpService("localhost", 8080);
-        client.setClientObserver(this);
+        client.addClientObserver(this);
         executor = Executors.newSingleThreadExecutor();
 
         gameService = new GameService();
         gameService.setTcpService(client);
+        client.addClientObserver(gameService);
+        gameService.setGameObserver(this);
     }
     @FXML
     private void initialize() {
@@ -264,6 +266,12 @@ public class HelloController implements ClientObserver, GameObserver {
     public void disableTextInput() {
         textInput.setOnAction(null);
         textInput.setEditable(false);
+    }
+    public void disableCanvas() {
+        canvas.setDisable(true);
+    }
+    public void enableCanvas() {
+        canvas.setDisable(false);
     }
     public void enableButtonBar() {
         buttonBar.setDisable(false);
@@ -352,12 +360,20 @@ public class HelloController implements ClientObserver, GameObserver {
                 break;
             }
             case "beginround": {
-                if(commandsegments.length < 2 || commandsegments[1].isEmpty() || gameService.hasWord(commandsegments[1])) {
+                if(commandsegments.length < 2 || commandsegments[1].isEmpty() || !gameService.hasWord(commandsegments[1])) {
                     logger.info("No word or wrong word was chosen!");
                     break;
                 }
 
                 gameService.drawerAcknowledge(commandsegments[1]);
+                break;
+            }
+            case "disableTest": {
+                setGuesserMode();
+                break;
+            }
+            case "enableTest": {
+                resetMode();
                 break;
             }
         }
@@ -438,25 +454,25 @@ public class HelloController implements ClientObserver, GameObserver {
     //###################### Game Observer Methods #############################
     @Override
     public void setGuesserMode() {
+        logger.debug("Setting guesser mode");
         disableButtonBar();
-        removeMouseEvents();
-        removeColorPickerEvent();
+        disableCanvas();
     }
 
     @Override
     public void setDrawerMode() {
+        logger.debug("Setting drawer mode");
         disableTextInput();
         enableButtonBar();
-        addMouseEvents();
-        addColorPickerEvent();
+        enableCanvas();
     }
 
     @Override
     public void resetMode() {
+        logger.debug("Resetting mode.");
         enableButtonBar();
         enableTextInput();
-        addMouseEvents();
-        addColorPickerEvent();
+        enableCanvas();
     }
 
     @Override
@@ -466,6 +482,6 @@ public class HelloController implements ClientObserver, GameObserver {
 
     @Override
     public void setDisplayWord(String word) {
-        outputWord.setText(word);
+        Platform.runLater(() -> outputWord.setText(word));
     }
 }

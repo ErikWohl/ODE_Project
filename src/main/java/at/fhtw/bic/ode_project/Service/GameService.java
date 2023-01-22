@@ -15,7 +15,7 @@ public class GameService implements ClientObserver {
     private TcpService tcpService;
     private GameObserver gameObserver;
 
-    private GameStateEnum currentState = GameStateEnum.INITIAL;
+    private GameStateEnum gameState = GameStateEnum.INITIAL;
     private PlayerStateEnum playerState = PlayerStateEnum.NONE;
 
     private List<String> words;
@@ -30,10 +30,10 @@ public class GameService implements ClientObserver {
         this.gameObserver = gameObserver;
     }
     public boolean isInitial() {
-        return currentState == GameStateEnum.INITIAL;
+        return gameState == GameStateEnum.INITIAL;
     }
     public boolean isStarting() {
-        return currentState == GameStateEnum.STARTING;
+        return gameState == GameStateEnum.STARTING;
     }
     public boolean isDrawer() {
         return playerState == PlayerStateEnum.DRAWER;
@@ -52,7 +52,7 @@ public class GameService implements ClientObserver {
     }
     public void startGame() {
         if(tcpService.isConnected()) {
-            logger.info("Starting another client not possible, client is already running!");
+            logger.info("Trying to start a game. Sending a start game request.");
             tcpService.sendCommand(CommandEnum.START_GAME_REQUEST);
         }
     }
@@ -63,7 +63,7 @@ public class GameService implements ClientObserver {
             return;
         }
         logger.info("Drawer chose word and send acknowledgement.");
-        tcpService.sendCommand(CommandEnum.DRAWER_ACKNOWLEDGEMENT, chosenWord);
+        tcpService.sendCommand(CommandEnum.DRAWER_ACKNOWLEDGEMENT, word);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class GameService implements ClientObserver {
             // wird hier überprüft, ob jemand eine falsche state hat
             case START_GAME_REQUEST: {
                 logger.info("Start request for the game ...");
-                if(currentState != GameStateEnum.INITIAL) {
+                if(gameState != GameStateEnum.INITIAL) {
                     logger.info("Client is in another game state other than initial!");
                     logger.info("Send start request not acknowledged.");
                     tcpService.sendCommand(CommandEnum.START_GAME_NOTACKNOWLEDGEMENT);
@@ -87,8 +87,8 @@ public class GameService implements ClientObserver {
                 logger.info("Send start request acknowledged.");
                 tcpService.sendCommand(CommandEnum.START_GAME_ACKNOWLEDGEMENT);
 
-                currentState = GameStateEnum.STARTING;
-                logger.debug("Setting game status to " + currentState);
+                gameState = GameStateEnum.STARTING;
+                logger.debug("Setting game status to " + gameState);
                 break;
             }
             // Alle Clients haben Acknowledged, somit hat der Server
@@ -96,9 +96,9 @@ public class GameService implements ClientObserver {
             // GUESSER warten einfach auf den Rundenstart oder einen Abbruch
             case GUESSER_REQUEST: {
                 logger.info("Trying to set client to guesser mode");
-                logger.debug("Game state: " + currentState + " Player state: " + playerState);
+                logger.debug("Game state: " + gameState + " Player state: " + playerState);
 
-                if(currentState != GameStateEnum.STARTING || playerState != PlayerStateEnum.NONE) {
+                if(gameState != GameStateEnum.STARTING || playerState != PlayerStateEnum.NONE) {
                     logger.info("Client is in another game or player state!");
                     return;
                 }
@@ -112,33 +112,34 @@ public class GameService implements ClientObserver {
             // Er muss einer der drei Wörter wählen
             case DRAWER_REQUEST: {
                 logger.info("Trying to set client to drawer mode");
-                logger.debug("Game state: " + currentState + " Player state: " + playerState);
+                logger.debug("Game state: " + gameState + " Player state: " + playerState);
 
-                if(currentState != GameStateEnum.STARTING || playerState != PlayerStateEnum.NONE) {
+                if(gameState != GameStateEnum.STARTING || playerState != PlayerStateEnum.NONE) {
                     logger.info("Client is in another game or player state!");
                     return;
                 }
 
-                String[] split = message.substring(4).split(";");
+                String[] split = message.substring(3).split(";");
                 words = Arrays.stream(split).toList();
                 playerState = PlayerStateEnum.DRAWER;
                 logger.info("Set client to guesser mode for word choosing");
-                logger.debug("Received words: " + message.substring(4));
+                logger.debug("Received words: " + message.substring(3));
                 gameObserver.setGuesserMode();
-                gameObserver.outputWords("You are the drawer choose a word: " + message.substring(4));
+                gameObserver.outputWords("You are the drawer choose a word: " + message.substring(3));
                 break;
             }
             // Sobald der Drawer ein Wort ausgewählt hat schickt er ein Acknowledgement
             // Daraufhin requested der Server den Rundenstart
             case ROUND_START_REQUEST: {
                 logger.info("Request to start the round ");
-                logger.debug("Game state: " + currentState + " Player state: " + playerState);
-                if(!isStarting() || !(isDrawer() && isGuesser())) {
+                logger.debug("Game state: " + gameState + " Player state: " + playerState);
+                if(!isStarting() || !(isDrawer() || isGuesser())) {
                     logger.info("Client is in another game or player state!");
                     tcpService.sendCommand(CommandEnum.ROUND_START_NOTACKNOWLEDGEMENT);
+                    return;
                 }
                 logger.info("All seems ready to rumble!");
-                currentState = GameStateEnum.STARTED;
+                gameState = GameStateEnum.STARTED;
                 tcpService.sendCommand(CommandEnum.ROUND_START_ACKNOWLEDGEMENT);
                 break;
             }
@@ -147,25 +148,26 @@ public class GameService implements ClientObserver {
             // Wort erhält
             case ROUND_STARTED: {
                 logger.info("Round start was sent.");
-                logger.debug("Game state: " + currentState + " Player state: " + playerState);
+                logger.debug("Game state: " + gameState + " Player state: " + playerState);
 
-                if(currentState != GameStateEnum.STARTED) {
+                if(gameState != GameStateEnum.STARTED) {
                     logger.error("Client is in another game!");
+                    return;
                 }
 
                 if(isDrawer()) {
                     gameObserver.setDrawerMode();
                 }
 
-                chosenWord = message.substring(4);
+                chosenWord = message.substring(3);
                 gameObserver.setDisplayWord(chosenWord);
                 break;
             }
             case ERROR: {
-                logger.info("An error has occured.");
-                logger.debug("Game state: " + currentState + " Player state: " + playerState);
-                logger.info("Resetting to initial mode.");
-                currentState = GameStateEnum.INITIAL;
+                logger.error("An error has occured.");
+                logger.debug("Game state: " + gameState + " Player state: " + playerState);
+                logger.error("Resetting to initial mode.");
+                gameState = GameStateEnum.INITIAL;
                 playerState = PlayerStateEnum.NONE;
                 words = null;
                 chosenWord = "";
@@ -176,6 +178,12 @@ public class GameService implements ClientObserver {
 
     @Override
     public void onDebugMessage(String message) {
-
+        // Debug message wird nur aufgerufen, wenn es zu TCP Serverproblemen kommt
+        // Wir setzen hier einfach preventiv den GameService und HelloController zurück
+        gameState = GameStateEnum.INITIAL;
+        playerState = PlayerStateEnum.NONE;
+        words = null;
+        chosenWord = "";
+        gameObserver.resetMode();
     }
 }

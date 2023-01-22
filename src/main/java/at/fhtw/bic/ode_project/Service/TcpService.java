@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -20,10 +22,11 @@ public class TcpService implements Runnable {
     private BufferedReader input;
     private PrintWriter output;
 
-    private ClientObserver clientObserver;
+    private List<ClientObserver> clientObserverList;
     private TcpStateEnum currentState = TcpStateEnum.DISCONNETED;
     public TcpService(String iPAddress, int port) {
         this.socketAddress = new InetSocketAddress(iPAddress, port);
+        this.clientObserverList = new ArrayList<>();
     }
 
     public Socket getClientSocket() {
@@ -38,10 +41,9 @@ public class TcpService implements Runnable {
         this.socketAddress = socketAddress;
     }
 
-    public void setClientObserver(ClientObserver clientObserver) {
-        this.clientObserver = clientObserver;
+    public void addClientObserver(ClientObserver clientObserver) {
+        clientObserverList.add(clientObserver);
     }
-
     public boolean isDisconnected() {
         return currentState == TcpStateEnum.DISCONNETED;
     }
@@ -54,11 +56,15 @@ public class TcpService implements Runnable {
         return currentState == TcpStateEnum.CONNECTED;
     }
 
-    public void sendMessage(String message) {
-        logger.debug("Trying to send message connection status: " + currentState);
-        output.println(message);
-        logger.debug("Message:  " + message + "sent. ");
-
+    private void sendReceivedMessageToObservers(String message) {
+        for(var observer : clientObserverList) {
+            observer.onMessageReceive(message);
+        }
+    }
+    private void sendDebugMessageToObservers(String message) {
+        for(var observer : clientObserverList) {
+            observer.onDebugMessage(message);
+        }
     }
 
     public void sendCommand(CommandEnum commandEnum) {
@@ -108,7 +114,7 @@ public class TcpService implements Runnable {
             } while(true);
         } catch (NumberOfRetriesExceededException e) {
             logger.info("Max number of tries reached.");
-            clientObserver.onDebugMessage("Verbindung mit Server ist fehlgeschlagen!");
+            sendDebugMessageToObservers("Verbindung mit Server ist fehlgeschlagen!");
             lock.writeLock().lock();
             try {
                 currentState = TcpStateEnum.DISCONNETED;
@@ -144,10 +150,10 @@ public class TcpService implements Runnable {
             do {
                 String message = input.readLine();
                 logger.trace("Received message: " + message);
-                clientObserver.onMessageReceive(message);
+                sendReceivedMessageToObservers(message);
             } while (true);
         } catch (IOException e) {
-            clientObserver.onDebugMessage("Server disconnected, while receiving message!");
+            sendDebugMessageToObservers("Server disconnected, while receiving message!");
             logger.error("Server disconnected, while receiving message!");
             ReadWriteLock lock = new ReentrantReadWriteLock();
             lock.writeLock().lock();

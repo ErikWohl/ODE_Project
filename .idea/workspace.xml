@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Initial game logic implementation">
+    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Fixed Bug, where the client was still active after closing the window.&#10;Fixed Text not showing in client textbox.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/CommandEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/CommandEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j2.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,6 +74,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Application.at.fhtw.bic.ode_project.HelloApplication" />
+        <item itemvalue="Application.at.fhtw.bic.ode_project.HelloApplication" />
+        <item itemvalue="Application.at.fhtw.bic.ode_project.HelloApplication" />
       </list>
     </recent_temporary>
   </component>
@@ -105,6 +109,8 @@
       <workItem from="1674145968582" duration="3624000" />
       <workItem from="1674213925488" duration="20226000" />
       <workItem from="1674238463064" duration="14546000" />
+      <workItem from="1674300181105" duration="186000" />
+      <workItem from="1674381863108" duration="12088000" />
     </task>
     <task id="LOCAL-00001" summary="Init. Fx with simple mouse detection.">
       <created>1665120516763</created>
@@ -244,6 +250,16 @@
             </State>
           </value>
         </entry>
+        <entry key="d1394bd6-6fc9-4a47-9dce-fc1132321118">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="d1394bd6-6fc9-4a47-9dce-fc1132321118" value="TOOL_WINDOW" />
       </map>
     </option>
   </component>
@@ -265,5 +281,16 @@
     <MESSAGE value="Gleichsetzung der Canvasgröße C# &amp; Java" />
     <MESSAGE value="Initial game logic implementation" />
     <option name="LAST_COMMIT_MESSAGE" value="Initial game logic implementation" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java</url>
+          <line>341</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
