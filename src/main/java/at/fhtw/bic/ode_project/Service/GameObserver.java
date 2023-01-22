@@ -7,6 +7,7 @@ public interface GameObserver {
     public void resetMode();
     public void outputWords(String words);
     public void setDisplayWord(String word);
+    public void setChoosableWords(String word1, String word2, String word3);
     public void clearCanvas();
     public void transformMessageToLine(String message);
 }

@@ -7,41 +7,51 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<Pane minHeight="600.0" minWidth="1000.0" prefHeight="650.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bic.ode_project.Controller.HelloController">
+<Pane minHeight="600.0" minWidth="1000.0" prefHeight="700.0" prefWidth="1250.0" style="-fx-background-color: turquoise;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.fhtw.bic.ode_project.Controller.HelloController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-   <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefWidth="1100.0">
+   <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefWidth="1250.0">
       <center>
-         <Pane style="-fx-border-color: black;" BorderPane.alignment="CENTER">
+         <Pane prefHeight="500.0" style="-fx-background-color: white; -fx-border-color: black;" BorderPane.alignment="CENTER">
             <children>
-                 <Canvas fx:id="canvas" height="500" width="800.0" />
+                 <Canvas fx:id="canvas" height="500.0" width="800.0" />
+               <AnchorPane fx:id="wordPane" prefHeight="500.0" prefWidth="800.0" style="-fx-background-color: white;">
+                  <children>
+                     <Button fx:id="wordOneButton" layoutX="50.0" layoutY="177.0" mnemonicParsing="false" onAction="#onWordOneButtonClick" prefHeight="50.0" prefWidth="200.0" text="Word1">
+                        <font>
+                           <Font name="System Bold" size="16.0" />
+                        </font></Button>
+                     <Label layoutX="250.0" layoutY="62.0" text="Choose a Word">
+                        <font>
+                           <Font name="System Bold" size="44.0" />
+                        </font>
+                     </Label>
+                     <Button fx:id="wordTwoButton" layoutX="308.0" layoutY="177.0" mnemonicParsing="false" onAction="#onWordTwoButtonClick" prefHeight="50.0" prefWidth="200.0" text="Word2">
+                        <font>
+                           <Font name="System Bold" size="16.0" />
+                        </font></Button>
+                     <Button fx:id="wordThreeButton" layoutX="565.0" layoutY="177.0" mnemonicParsing="false" onAction="#onWordThreeButtonClick" prefHeight="50.0" prefWidth="200.0" text="Word3">
+                        <font>
+                           <Font name="System Bold" size="16.0" />
+                        </font></Button>
+                  </children>
+               </AnchorPane>
             </children>
          </Pane>
       </center>
       <right>
-         <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="300.0" BorderPane.alignment="CENTER">
-            <items>
-               <TextArea fx:id="textOutput" editable="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" style="-fx-border-color: black;" wrapText="true" />
-               <TextField fx:id="textInput" editable="false" style="-fx-border-color: black;" />
-            </items>
-         </SplitPane>
-      </right>
-      <top>
-         <HBox prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <AnchorPane prefHeight="200.0" prefWidth="300.0">
             <children>
-               <Label fx:id="outputWord" text="🗑">
-                  <font>
-                     <Font name="Arial" size="32.0" />
-                  </font>
-               </Label>
+               <TextArea fx:id="textOutput" editable="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="300.0" style="-fx-border-color: black;" wrapText="true" />
+               <TextField fx:id="textInput" editable="false" layoutY="475.0" prefHeight="25.0" prefWidth="300.0" promptText="Enter some text" style="-fx-border-color: black;" />
             </children>
-         </HBox>
-      </top>
+         </AnchorPane>
+      </right>
       <bottom>
          <HBox fx:id="buttonBar" prefHeight="100.0" prefWidth="700.0" BorderPane.alignment="CENTER">
             <children>
-               <Button fx:id="textClearButton" mnemonicParsing="false" onAction="#onTextClearButtonClick" prefHeight="60.0" prefWidth="125.0" text="Clear Text">
+               <Button fx:id="textClearButton" mnemonicParsing="false" onAction="#onTextClearButtonClick" prefHeight="60.0" prefWidth="125.0" style="-fx-border-color: black; -fx-background-radius: 15px; -fx-border-radius: 15px; -fx-border-width: 2px;" text="Clear Text">
                   <font>
                      <Font name="System Bold" size="20.0" />
                   </font>
@@ -49,15 +59,15 @@
                      <Insets left="25.0" top="20.0" />
                   </HBox.margin>
                </Button>
-               <Button fx:id="graphicClearButton" minHeight="20.0" minWidth="60.0" onAction="#onGraphicClearButtonClick" prefHeight="60.0" prefWidth="125.0" text="🗑" textAlignment="CENTER" wrapText="true">
+               <Button fx:id="graphicClearButton" minHeight="20.0" minWidth="60.0" onAction="#onGraphicClearButtonClick" prefHeight="60.0" prefWidth="125.0" style="-fx-border-color: black; -fx-background-radius: 15px; -fx-border-radius: 15px; -fx-border-width: 2px;" text="🗑" textAlignment="CENTER" wrapText="true">
                  <font>
-                    <Font size="32.0" />
+                    <Font size="31.0" />
                  </font>
                   <HBox.margin>
                      <Insets left="25.0" top="20.0" />
                   </HBox.margin>
                </Button>
-               <ColorPicker fx:id="colorPicker" prefHeight="25.0" prefWidth="125.0">
+               <ColorPicker fx:id="colorPicker" prefHeight="25.0" prefWidth="125.0" style="-fx-background-color: white; -fx-border-color: black; -fx-background-radius: 15px; -fx-border-radius: 15px; -fx-border-width: 2px;">
                  <value>
                     <Color />
                  </value>
@@ -65,21 +75,21 @@
                      <Insets left="25.0" top="38.0" />
                   </HBox.margin>
                </ColorPicker>
-               <Button fx:id="strokeIncreaseButton" mnemonicParsing="false" onAction="#onStrokeIncreaseButtonClick" prefHeight="60.0" prefWidth="125.0" text="Size +">
+               <Button fx:id="strokeIncreaseButton" mnemonicParsing="false" onAction="#onStrokeIncreaseButtonClick" prefHeight="60.0" prefWidth="125.0" style="-fx-border-color: black; -fx-background-radius: 15px; -fx-border-radius: 15px; -fx-border-width: 2px;" text="Size +">
                   <HBox.margin>
                      <Insets left="25.0" top="20.0" />
                   </HBox.margin>
                   <font>
                      <Font name="System Bold" size="20.0" />
                   </font></Button>
-               <Button fx:id="strokeDecreaseButton" mnemonicParsing="false" onAction="#onStrokeDecreaseButtonClick" prefHeight="60.0" prefWidth="125.0" text="Size -">
+               <Button fx:id="strokeDecreaseButton" mnemonicParsing="false" onAction="#onStrokeDecreaseButtonClick" prefHeight="60.0" prefWidth="125.0" style="-fx-border-color: black; -fx-background-radius: 15px; -fx-border-radius: 15px; -fx-border-width: 2px;" text="Size -">
                   <HBox.margin>
                      <Insets left="25.0" top="20.0" />
                   </HBox.margin>
                   <font>
                      <Font name="System Bold" size="20.0" />
                   </font></Button>
-               <Button fx:id="saveImageButton" maxHeight="60.0" maxWidth="125.0" mnemonicParsing="false" onAction="#onSaveImageButtonClick" prefHeight="60.0" prefWidth="125.0" text="📷" wrapText="true">
+               <Button fx:id="imageSaveButton" maxHeight="60.0" maxWidth="125.0" mnemonicParsing="false" onAction="#onImageSaveButtonClick" prefHeight="60.0" prefWidth="125.0" style="-fx-border-color: black; -fx-background-radius: 15px; -fx-border-radius: 15px; -fx-border-width: 2px;" text="📷" wrapText="true">
                   <HBox.margin>
                      <Insets left="25.0" top="20.0" />
                   </HBox.margin>
@@ -89,5 +99,72 @@
             </children>
          </HBox>
       </bottom>
+      <left>
+         <AnchorPane prefHeight="200.0" prefWidth="150.0">
+            <children>
+               <AnchorPane minHeight="250.0" minWidth="150.0" prefHeight="251.0" prefWidth="150.0" style="-fx-background-color: white; -fx-border-color: black;" />
+               <AnchorPane layoutY="251.0" minHeight="250.0" minWidth="150.0" prefHeight="251.0" prefWidth="150.0" style="-fx-background-color: white; -fx-border-color: black;">
+                  <children>
+                     <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="20.0" prefWidth="125.0" text="Server status:">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Label>
+                     <Button fx:id="hostConnectButton" layoutX="14.0" layoutY="67.0" mnemonicParsing="false" onAction="#onHostConnectButtonClick" prefHeight="35.0" prefWidth="125.0" style="-fx-border-color: black; -fx-background-radius: 15px; -fx-border-radius: 15px; -fx-border-width: 2px;" text="Connect">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Button>
+                     <Label fx:id="connectionStatus" alignment="CENTER" layoutX="14.0" layoutY="41.0" prefHeight="20.0" prefWidth="125.0" text="Not connected">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Label>
+                     <Label alignment="CENTER" layoutX="13.0" layoutY="117.0" prefHeight="20.0" prefWidth="125.0" text="Game status:">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Label>
+                     <Button fx:id="gameStartButton" layoutX="14.0" layoutY="169.0" mnemonicParsing="false" onAction="#onGameStartButtonClick" prefHeight="35.0" prefWidth="125.0" style="-fx-border-color: black; -fx-background-radius: 15px; -fx-border-radius: 15px; -fx-border-width: 2px;" text="Start Game">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Button>
+                     <Label fx:id="gameStatus" alignment="CENTER" layoutX="14.0" layoutY="143.0" prefHeight="20.0" prefWidth="125.0" text="Initial">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Label>
+                     <Label layoutX="13.0" layoutY="217.0" prefHeight="20.0" prefWidth="50.0" text="Role:">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Label>
+                     <Label fx:id="playerStatus" layoutX="63.0" layoutY="217.0" prefHeight="20.0" prefWidth="75.0" text="NONE">
+                        <font>
+                           <Font name="System Bold" size="12.0" />
+                        </font>
+                     </Label>
+                  </children>
+               </AnchorPane>
+            </children>
+         </AnchorPane>
+      </left>
+      <top>
+         <AnchorPane prefHeight="50.0" prefWidth="1250.0" BorderPane.alignment="CENTER">
+            <children>
+               <Label fx:id="outputWord" layoutX="614.0" layoutY="6.0" text="🗑">
+                  <font>
+                     <Font name="Arial" size="32.0" />
+                  </font>
+               </Label>
+               <Label layoutX="1062.0" layoutY="7.0" text="Chat">
+                  <font>
+                     <Font name="System Bold" size="24.0" />
+                  </font>
+               </Label>
+            </children>
+         </AnchorPane>
+      </top>
    </BorderPane>
 </Pane>

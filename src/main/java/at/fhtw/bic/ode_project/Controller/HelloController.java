@@ -1,10 +1,10 @@
 package at.fhtw.bic.ode_project.Controller;
 
 import at.fhtw.bic.ode_project.Enums.CommandEnum;
-import at.fhtw.bic.ode_project.Service.ClientObserver;
-import at.fhtw.bic.ode_project.Service.GameObserver;
-import at.fhtw.bic.ode_project.Service.GameService;
-import at.fhtw.bic.ode_project.Service.TcpService;
+import at.fhtw.bic.ode_project.Enums.GameStateEnum;
+import at.fhtw.bic.ode_project.Enums.PlayerStateEnum;
+import at.fhtw.bic.ode_project.Enums.TcpStateEnum;
+import at.fhtw.bic.ode_project.Service.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,6 +15,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -30,28 +31,47 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.imageio.ImageIO;
-public class HelloController implements GameObserver {
+public class HelloController implements GameObserver, ClientStatusObserver, GameStatusObserver {
 
     //todo: @ewohlrab: https://stackoverflow.com/questions/36088733/smooth-path-in-javafx
     // Smoother pathing with cubicCurve
     private Logger logger = LogManager.getLogger(HelloController.class);
 
     //###################### FXML Variablen #############################
-    @FXML
-    private TextArea textOutput;
-    @FXML
-    private TextField textInput;
     private Stage stage;
     private Scene scene;
     @FXML
     private Canvas canvas;
     private GraphicsContext graphicsContext;
     @FXML
+    private TextArea textOutput;
+    @FXML
+    private TextField textInput;
+    @FXML
     private ColorPicker colorPicker;
     @FXML
     private HBox buttonBar;
     @FXML
     private Label outputWord;
+    @FXML
+    private Button hostConnectButton;
+    @FXML
+    private Label connectionStatus;
+    @FXML
+    private Button gameStartButton;
+    @FXML
+    private Label gameStatus;
+    @FXML
+    private Label playerStatus;
+
+    @FXML
+    private AnchorPane wordPane;
+    @FXML
+    private Button wordOneButton;
+    @FXML
+    private Button wordTwoButton;
+    @FXML
+    private Button wordThreeButton;
 
     //###################### Tcp Variablen #############################
     private TcpService client;
@@ -191,7 +211,7 @@ public class HelloController implements GameObserver {
         logger.debug("Stroke width: " + length);
     }
     @FXML
-    protected void onSaveImageButtonClick() {
+    protected void onImageSaveButtonClick() {
         logger.info("Trying to safe file.");
         FileChooser savefile = new FileChooser();
         savefile.setTitle("Save File");
@@ -217,28 +237,66 @@ public class HelloController implements GameObserver {
             }
         }
     }
+    @FXML
+    protected void onHostConnectButtonClick() {
+        if(client.isDisconnected()) {
+            executor.submit(() -> client.run());
+            hostConnectButton.setDisable(true);
+        } else {
+            logger.info("Starting another client not possible, client is already running!");
+        }
+    }
+    @FXML
+    protected void onGameStartButtonClick() {
+        if(client.isConnected() && gameService.isInitial()) {
+            gameService.startGame();
+            gameStartButton.setDisable(true);
+        } else {
+            logger.info("Starting game is not possible! Client is not connected or gameService is not in initial state!");
+        }
+    }
+    @FXML
+    protected void onWordOneButtonClick() {
+        gameService.drawerAcknowledge(wordOneButton.getText());
+        wordPane.setVisible(false);
+    }
+    @FXML
+    protected void onWordTwoButtonClick() {
+        gameService.drawerAcknowledge(wordTwoButton.getText());
+        wordPane.setVisible(false);
 
+    }
+    @FXML
+    protected void onWordThreeButtonClick() {
+        gameService.drawerAcknowledge(wordTwoButton.getText());
+        wordPane.setVisible(false);
+    }
     //###################### Initialization Methods #############################
 
     public HelloController() {
         client = new TcpService("localhost", 8080);
         executor = Executors.newSingleThreadExecutor();
-
         gameService = new GameService();
+
         gameService.setTcpService(client);
         client.setClientObserver(gameService);
+        client.setStatusObserver(this);
         gameService.setGameObserver(this);
+        gameService.setStatusObserver(this);
     }
     @FXML
     private void initialize() {
     }
-    public void initUI(Stage stage) {
-        logger.trace("Trace Message!");
-        logger.debug("Debug Message!");
-        logger.info("Info Message!");
-        logger.warn("Warn Message!");
-        logger.error("Error Message!");
-        logger.fatal("Fatal Message!");
+    public void initUI(Stage stage, String username, String host, int port) {
+        logger.trace("Test Trace Message!");
+        logger.debug("Test Debug Message!");
+        logger.info("Test Info Message!");
+        logger.warn("Test Warn Message!");
+        logger.error("Test Error Message!");
+        logger.fatal("Test Fatal Message!");
+
+        client.setSocketAddress(new InetSocketAddress(host, port));
+        gameService.setUsername(username);
 
         scene = stage.getScene();
 
@@ -251,11 +309,12 @@ public class HelloController implements GameObserver {
         addMouseEvents();
         addColorPickerEvent();
 
+        wordPane.setVisible(false);
+
         // Set the text enter action
         enableTextInput();
         enableButtonBar();
-
-        stage.setTitle("Skribbl.io");
+        stage.setResizable(false);
         stage.show();
     }
     public void enableTextInput() {
@@ -347,6 +406,7 @@ public class HelloController implements GameObserver {
             case "startclient": {
                 if(client.isDisconnected()) {
                     executor.submit(() -> client.run());
+                    connectionStatus.setText("Connected");
                 } else {
                     logger.info("Starting another client not possible, client is already running!");
                 }
@@ -431,6 +491,10 @@ public class HelloController implements GameObserver {
         enableButtonBar();
         enableTextInput();
         enableCanvas();
+        Platform.runLater(() -> {
+            Platform.runLater(() -> outputWord.setText(""));
+            wordPane.setVisible(true);
+        });
     }
 
     @Override
@@ -440,7 +504,17 @@ public class HelloController implements GameObserver {
 
     @Override
     public void setDisplayWord(String word) {
-        Platform.runLater(() -> outputWord.setText(word));
+        Platform.runLater(() -> outputWord.setText(word.replace("", " ").trim()));
+    }
+
+    @Override
+    public void setChoosableWords(String word1, String word2, String word3) {
+        Platform.runLater(() -> {
+            wordOneButton.setText(word1);
+            wordTwoButton.setText(word2);
+            wordThreeButton.setText(word3);
+            wordPane.setVisible(true);
+        });
     }
 
     @Override
@@ -461,5 +535,37 @@ public class HelloController implements GameObserver {
         size = Integer.parseInt(points[4]);
         Color color = Color.valueOf(transformColorToJavaHex(points[5]));
         drawLine(x1,y1,x2,y2, size, color);;
+    }
+
+    @Override
+    public void onClientStatusChange(TcpStateEnum status) {
+        logger.debug("Setting connection status to " + status);
+
+        if(status.equals(TcpStateEnum.DISCONNECTED)) {
+            hostConnectButton.setDisable(false);
+        }
+
+        Platform.runLater(() -> connectionStatus.setText(status.toString()));
+    }
+
+    @Override
+    public void onPlayerStatusChange(PlayerStateEnum status) {
+        logger.debug("Setting player status to " + status);
+        Platform.runLater(() -> playerStatus.setText(status.toString()));
+    }
+
+    @Override
+    public void onGameStatusChange(GameStateEnum status) {
+        logger.debug("Setting game status to " + status);
+
+        if(!status.equals(GameStateEnum.INITIAL) && !gameStartButton.isDisabled()) {
+            gameStartButton.setDisable(true);
+        }
+
+        if(status.equals(GameStateEnum.INITIAL)) {
+            gameStartButton.setDisable(false);
+        }
+
+        Platform.runLater(() -> gameStatus.setText(status.toString()));
     }
 }

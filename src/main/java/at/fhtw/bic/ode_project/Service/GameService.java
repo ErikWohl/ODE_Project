@@ -11,22 +11,30 @@ import java.util.List;
 
 public class GameService implements ClientObserver {
     private Logger logger = LogManager.getLogger(GameService.class);
-
     private TcpService tcpService;
     private GameObserver gameObserver;
-
+    private GameStatusObserver statusObserver;
     private GameStateEnum gameState = GameStateEnum.INITIAL;
     private PlayerStateEnum playerState = PlayerStateEnum.NONE;
 
+    private String username;
+
+    private boolean reset_occured = false;
     private List<String> words;
     private String chosenWord = "";
-
     public void setTcpService(TcpService tcpService) {
         this.tcpService = tcpService;
     }
     public void setGameObserver(GameObserver gameObserver) {
         this.gameObserver = gameObserver;
     }
+    public void setStatusObserver(GameStatusObserver statusObserver) {
+        this.statusObserver = statusObserver;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public boolean isInitial() {
         return gameState == GameStateEnum.INITIAL;
     }
@@ -63,11 +71,22 @@ public class GameService implements ClientObserver {
         logger.info("Drawer chose word and send acknowledgement.");
         tcpService.sendCommand(CommandEnum.DRAWER_ACKNOWLEDGEMENT, word);
     }
+    public void reset() {
+        logger.error("Resetting to initial mode.");
+        gameState = GameStateEnum.INITIAL;
+        statusObserver.onGameStatusChange(gameState);
+        playerState = PlayerStateEnum.NONE;
+        statusObserver.onPlayerStatusChange(playerState);
+        words = null;
+        chosenWord = "";
+        gameObserver.resetMode();
+    }
 
     @Override
     public void onMessageReceive(String message) {
         // Abarbeitung der commands Start game request, start game acknowledgement
         // Commands sind immer 3 Zeichen lang.
+        reset_occured = false;
         String command = message.substring(0, 3);
         logger.debug("command: " + command);
         CommandEnum commandEnum = CommandEnum.fromString(command);
@@ -99,7 +118,7 @@ public class GameService implements ClientObserver {
                 tcpService.sendCommand(CommandEnum.START_GAME_ACKNOWLEDGEMENT);
 
                 gameState = GameStateEnum.STARTING;
-                logger.debug("Setting game status to " + gameState);
+                statusObserver.onGameStatusChange(gameState);
                 break;
             }
             // Alle Clients haben Acknowledged, somit hat der Server
@@ -116,6 +135,7 @@ public class GameService implements ClientObserver {
 
                 playerState = PlayerStateEnum.GUESSER;
                 logger.info("Set client to guesser mode");
+                statusObserver.onPlayerStatusChange(playerState);
                 gameObserver.setGuesserMode();
                 break;
             }
@@ -130,13 +150,18 @@ public class GameService implements ClientObserver {
                     return;
                 }
 
+                logger.debug("Received words: " + message.substring(3));
                 String[] split = message.substring(3).split(";");
                 words = Arrays.stream(split).toList();
+
                 playerState = PlayerStateEnum.DRAWER;
-                logger.info("Set client to guesser mode for word choosing");
-                logger.debug("Received words: " + message.substring(3));
-                gameObserver.setGuesserMode();
+                statusObserver.onPlayerStatusChange(playerState);
+
                 gameObserver.outputWords("You are the drawer choose a word: " + message.substring(3));
+                gameObserver.setChoosableWords(words.get(0), words.get(1), words.get(2));
+
+                logger.info("Set client to guesser mode for word choosing");
+                gameObserver.setGuesserMode();
                 break;
             }
             // Sobald der Drawer ein Wort ausgewählt hat schickt er ein Acknowledgement
@@ -151,6 +176,7 @@ public class GameService implements ClientObserver {
                 }
                 logger.info("All seems ready to rumble!");
                 gameState = GameStateEnum.STARTED;
+                statusObserver.onGameStatusChange(gameState);
                 tcpService.sendCommand(CommandEnum.ROUND_START_ACKNOWLEDGEMENT);
                 break;
             }
@@ -177,12 +203,7 @@ public class GameService implements ClientObserver {
             case ERROR: {
                 logger.error("An error has occured.");
                 logger.debug("Game state: " + gameState + " Player state: " + playerState);
-                logger.error("Resetting to initial mode.");
-                gameState = GameStateEnum.INITIAL;
-                playerState = PlayerStateEnum.NONE;
-                words = null;
-                chosenWord = "";
-                gameObserver.resetMode();
+                reset();
             }
         }
     }
@@ -192,11 +213,9 @@ public class GameService implements ClientObserver {
         // Debug message wird nur aufgerufen, wenn es zu TCP Serverproblemen kommt
         // Wir setzen hier einfach preventiv den GameService und HelloController zurück
         gameObserver.outputWords(message);
-
-        gameState = GameStateEnum.INITIAL;
-        playerState = PlayerStateEnum.NONE;
-        words = null;
-        chosenWord = "";
-        gameObserver.resetMode();
+        if(reset_occured) {
+            reset_occured = true;
+            reset();
+        }
     }
 }

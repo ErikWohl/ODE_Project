@@ -1,6 +1,6 @@
 package at.fhtw.bic.ode_project;
 
-import at.fhtw.bic.ode_project.Controller.HelloController;
+import at.fhtw.bic.ode_project.Controller.IndexController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,20 +14,20 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        URL applicationFXML = HelloApplication.class.getResource("hello-view.fxml");
+        URL applicationFXML = HelloApplication.class.getResource("index.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(applicationFXML);
 
 
         Parent root = fxmlLoader.load();
-        HelloController controller = fxmlLoader.getController();
+        IndexController controller = fxmlLoader.getController();
 
 
         Scene scene = new Scene(root);
+        stage.setTitle("Login");
         stage.setScene(scene);
-
-        controller.setStage(stage);
-        controller.initUI(stage);
+        stage.setResizable(false);
+        stage.show();
     }
     // todo: https://docs.oracle.com/javafx/2/events/filters.htm
     // https://stackoverflow.com/questions/46649406/custom-javafx-events
