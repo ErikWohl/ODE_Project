@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Arrays;
 import java.util.List;
 
-public class GameService implements ClientObserver {
+public class GameService implements ClientObserver{
     private Logger logger = LogManager.getLogger(GameService.class);
     private TcpService tcpService;
     private GameObserver gameObserver;
@@ -41,6 +41,10 @@ public class GameService implements ClientObserver {
     public boolean isStarting() {
         return gameState == GameStateEnum.STARTING;
     }
+    public boolean isFinished() {
+        return gameState == GameStateEnum.FINISHED;
+    }
+
     public boolean isDrawer() {
         return playerState == PlayerStateEnum.DRAWER;
     }
@@ -136,6 +140,8 @@ public class GameService implements ClientObserver {
                 playerState = PlayerStateEnum.GUESSER;
                 logger.info("Set client to guesser mode");
                 statusObserver.onPlayerStatusChange(playerState);
+                gameObserver.outputWords("You are a guesser. Try to guess the drawn word.");
+
                 gameObserver.setGuesserMode();
                 break;
             }
@@ -200,10 +206,43 @@ public class GameService implements ClientObserver {
                 gameObserver.setDisplayWord(chosenWord);
                 break;
             }
+
+            case CLOSE_GUESS: {
+                gameObserver.outputWords(message.substring(3) + " is close!");
+                break;
+            }
+
+            case CORRECT_GUESS: {
+                logger.info("Word was guessed correctly.");
+                logger.debug("Game state: " + gameState + " Player state: " + playerState);
+
+                gameState = GameStateEnum.FINISHED;
+                statusObserver.onGameStatusChange(gameState);
+
+                gameObserver.setWinMode();
+                break;
+            }
+
+            case ROUND_END_SUCCESS: {
+                if((isGuesser() && isFinished()) || isDrawer()) {
+
+                    playerState = PlayerStateEnum.NONE;
+                    statusObserver.onPlayerStatusChange(playerState);
+
+                    gameState = GameStateEnum.INITIAL;
+                    statusObserver.onGameStatusChange(gameState);
+
+                    gameObserver.clearCanvas();
+                    gameObserver.clearText();
+                    tcpService.sendCommand(commandEnum.ROUND_END_ACKNOWLEDGEMENT);
+                }
+                break;
+            }
             case ERROR: {
                 logger.error("An error has occured.");
                 logger.debug("Game state: " + gameState + " Player state: " + playerState);
                 reset();
+                break;
             }
         }
     }
@@ -213,7 +252,7 @@ public class GameService implements ClientObserver {
         // Debug message wird nur aufgerufen, wenn es zu TCP Serverproblemen kommt
         // Wir setzen hier einfach preventiv den GameService und HelloController zurück
         gameObserver.outputWords(message);
-        if(reset_occured) {
+        if(!reset_occured) {
             reset_occured = true;
             reset();
         }

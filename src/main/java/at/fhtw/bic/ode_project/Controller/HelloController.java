@@ -268,7 +268,7 @@ public class HelloController implements GameObserver, ClientStatusObserver, Game
     }
     @FXML
     protected void onWordThreeButtonClick() {
-        gameService.drawerAcknowledge(wordTwoButton.getText());
+        gameService.drawerAcknowledge(wordThreeButton.getText());
         wordPane.setVisible(false);
     }
     //###################### Initialization Methods #############################
@@ -439,8 +439,6 @@ public class HelloController implements GameObserver, ClientStatusObserver, Game
         return true;
     }
 
-    //###################### TCP Observer Receive Methods #############################
-
     //###################### Line Methods #############################
 
     public void drawLine(int x1, int y1, int x2, int y2, int size, Color color) {
@@ -473,6 +471,7 @@ public class HelloController implements GameObserver, ClientStatusObserver, Game
     @Override
     public void setGuesserMode() {
         logger.debug("Setting guesser mode");
+        enableTextInput();
         disableButtonBar();
         disableCanvas();
     }
@@ -493,8 +492,16 @@ public class HelloController implements GameObserver, ClientStatusObserver, Game
         enableCanvas();
         Platform.runLater(() -> {
             Platform.runLater(() -> outputWord.setText(""));
-            wordPane.setVisible(true);
+            wordPane.setVisible(false);
         });
+    }
+
+    @Override
+    public void setWinMode() {
+        logger.debug("Setting win mode");
+        disableTextInput();
+        disableButtonBar();
+        disableCanvas();
     }
 
     @Override
@@ -521,6 +528,12 @@ public class HelloController implements GameObserver, ClientStatusObserver, Game
     public void clearCanvas() {
         graphicsContext.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
         logger.debug("Graphic was cleared.");
+    }
+
+    @Override
+    public void clearText() {
+        textOutput.clear();
+        logger.debug("Text was cleared.");
     }
 
     @Override
