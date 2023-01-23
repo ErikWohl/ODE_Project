@@ -4,13 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/GameStateEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameService.java" afterDir="false" />
+    <list default="true" id="8f589435-76b4-4068-9e10-4b3766f577df" name="Changes" comment="Initial game loop finished.">
+      <change afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Controller/HelloController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/CommandEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Enums/CommandEnum.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/TcpService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameObserver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameObserver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/at/fhtw/bic/ode_project/Service/GameService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/at/fhtw/bic/ode_project/hello-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/at/fhtw/bic/ode_project/hello-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,15 +22,17 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Tag Library Descriptor" />
-        <option value="Class" />
         <option value="Enum" />
+        <option value="FxmlFile" />
+        <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="develop" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -43,14 +46,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/eriky/Documents/GitHub/ODE_Project_skribbl.io&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/eriky/Documents/GitHub/ODE_Project_skribbl.io",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\eriky\Documents\ODE\ODE_Project\src\main\resources" />
@@ -73,6 +80,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.at.fhtw.bic.ode_project.HelloApplication" />
+        <item itemvalue="Application.at.fhtw.bic.ode_project.HelloApplication" />
         <item itemvalue="Application.at.fhtw.bic.ode_project.HelloApplication" />
       </list>
     </recent_temporary>
@@ -105,7 +114,12 @@
       <workItem from="1674050699493" duration="10014000" />
       <workItem from="1674123820380" duration="17747000" />
       <workItem from="1674145968582" duration="3624000" />
-      <workItem from="1674213925488" duration="14815000" />
+      <workItem from="1674213925488" duration="20226000" />
+      <workItem from="1674238463064" duration="14546000" />
+      <workItem from="1674300181105" duration="186000" />
+      <workItem from="1674381863108" duration="14750000" />
+      <workItem from="1674407047364" duration="21655000" />
+      <workItem from="1674460987376" duration="17083000" />
     </task>
     <task id="LOCAL-00001" summary="Init. Fx with simple mouse detection.">
       <created>1665120516763</created>
@@ -191,7 +205,63 @@
       <option name="project" value="LOCAL" />
       <updated>1674226378000</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Anpassung der Color übergabe an C#">
+      <created>1674229779330</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1674229779330</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Anpassung der Color übergabe an C# 2">
+      <created>1674230636588</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1674230636588</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Gleichsetzung der Canvasgröße C# &amp; Java">
+      <created>1674233575444</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1674233575444</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Initial game logic implementation">
+      <created>1674249363105</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1674249363105</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Refactoring. Bugfixes in gameService.">
+      <created>1674400727633</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1674400727634</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Auslagerung der ganzen Message abarbeitung in den GameService. Gleicher Aufbau wie beim Server.">
+      <created>1674406780941</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1674406780942</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Major GUI overhaul.&#10;Status(TCP, Game, Player) refactoring.">
+      <created>1674421361639</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1674421361639</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Initial game loop finished.">
+      <created>1674430240455</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1674430240455</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -208,7 +278,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="master" />
+                        <option value="develop" />
                       </list>
                     </value>
                   </entry>
@@ -217,6 +287,16 @@
             </State>
           </value>
         </entry>
+        <entry key="d1394bd6-6fc9-4a47-9dce-fc1132321118">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="d1394bd6-6fc9-4a47-9dce-fc1132321118" value="TOOL_WINDOW" />
       </map>
     </option>
   </component>
@@ -233,6 +313,14 @@
     <MESSAGE value="Client TCP initial command structure.&#10;Added method for multiple clients to draw together." />
     <MESSAGE value="Client TCP added command:&#10;Clear&#10;Updated draw command" />
     <MESSAGE value="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling." />
-    <option name="LAST_COMMIT_MESSAGE" value="Client TCP State refactoring.&#10;Encapsulation of JavaFX objects for en/disabling." />
+    <MESSAGE value="Anpassung der Color übergabe an C#" />
+    <MESSAGE value="Anpassung der Color übergabe an C# 2" />
+    <MESSAGE value="Gleichsetzung der Canvasgröße C# &amp; Java" />
+    <MESSAGE value="Initial game logic implementation" />
+    <MESSAGE value="Refactoring. Bugfixes in gameService." />
+    <MESSAGE value="Auslagerung der ganzen Message abarbeitung in den GameService. Gleicher Aufbau wie beim Server." />
+    <MESSAGE value="Major GUI overhaul.&#10;Status(TCP, Game, Player) refactoring." />
+    <MESSAGE value="Initial game loop finished." />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial game loop finished." />
   </component>
 </project>

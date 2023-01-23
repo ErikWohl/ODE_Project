@@ -21,7 +21,8 @@ public class TcpService implements Runnable {
     private PrintWriter output;
 
     private ClientObserver clientObserver;
-    private TcpStateEnum currentState = TcpStateEnum.DISCONNETED;
+    private ClientStatusObserver statusObserver;
+    private TcpStateEnum currentState = TcpStateEnum.DISCONNECTED;
     public TcpService(String iPAddress, int port) {
         this.socketAddress = new InetSocketAddress(iPAddress, port);
     }
@@ -42,8 +43,12 @@ public class TcpService implements Runnable {
         this.clientObserver = clientObserver;
     }
 
+    public void setStatusObserver(ClientStatusObserver statusObserver) {
+        this.statusObserver = statusObserver;
+    }
+
     public boolean isDisconnected() {
-        return currentState == TcpStateEnum.DISCONNETED;
+        return currentState == TcpStateEnum.DISCONNECTED;
     }
 
     public boolean isStarting() {
@@ -54,14 +59,10 @@ public class TcpService implements Runnable {
         return currentState == TcpStateEnum.CONNECTED;
     }
 
-    public void sendMessage(String message) {
-        logger.debug("Trying to send message connection status: " + currentState);
-        output.println(message);
-        logger.debug("Message:  " + message + "sent. ");
-
+    public void sendCommand(CommandEnum commandEnum) {
+        sendCommand(commandEnum, "");
     }
-
-    public void sendCommand(String message, CommandEnum commandEnum) {
+    public void sendCommand(CommandEnum commandEnum, String message) {
         // Das Loglevel von drawing command ist trace!
         if(commandEnum.equals(CommandEnum.DRAWING)) {
             logger.trace("Trying to send command connection status: " + currentState);
@@ -88,12 +89,12 @@ public class TcpService implements Runnable {
         ReadWriteLock lock = new ReentrantReadWriteLock();
         lock.writeLock().lock();
         try {
-            if(currentState != TcpStateEnum.DISCONNETED) {
+            if(currentState != TcpStateEnum.DISCONNECTED) {
                 logger.info("Client is in another state other than disconnected!");
                 return;
             }
             currentState = TcpStateEnum.STARTING;
-            logger.debug("Setting connection status to " + currentState);
+            statusObserver.onClientStatusChange(currentState);
         } finally {
             lock.writeLock().unlock();
         }
@@ -106,10 +107,11 @@ public class TcpService implements Runnable {
         } catch (NumberOfRetriesExceededException e) {
             logger.info("Max number of tries reached.");
             clientObserver.onDebugMessage("Verbindung mit Server ist fehlgeschlagen!");
+
             lock.writeLock().lock();
             try {
-                currentState = TcpStateEnum.DISCONNETED;
-                logger.debug("Setting connection status to " + currentState);
+                currentState = TcpStateEnum.DISCONNECTED;
+                statusObserver.onClientStatusChange(currentState);
             } finally {
                 lock.writeLock().unlock();
             }
@@ -132,7 +134,7 @@ public class TcpService implements Runnable {
                 lock.writeLock().lock();
                 try {
                     currentState = TcpStateEnum.CONNECTED;
-                    logger.debug("Setting connection status to " + currentState);
+                    statusObserver.onClientStatusChange(currentState);
                 } finally {
                     lock.writeLock().unlock();
                 }
@@ -150,7 +152,7 @@ public class TcpService implements Runnable {
             lock.writeLock().lock();
             try {
                 currentState = TcpStateEnum.ERROR;
-                logger.debug("Setting connection status to " + currentState);
+                statusObserver.onClientStatusChange(currentState);
             } finally {
                 lock.writeLock().unlock();
             }
@@ -169,8 +171,7 @@ public class TcpService implements Runnable {
         lock.writeLock().lock();
         try {
             currentState = TcpStateEnum.RETRYING;
-            logger.debug("Setting connection status to " + currentState);
-
+            statusObserver.onClientStatusChange(currentState);
         } finally {
             lock.writeLock().unlock();
         }
@@ -179,7 +180,7 @@ public class TcpService implements Runnable {
                 secondsToWait = Math.min(60, Math.pow(2, tryNum));
                 tryNum++;
                 logger.info("Retry (" + tryNum + ") connecting to server after sleep (" + secondsToWait + "s).");
-                logger.debug("Current connection status: " + currentState);
+                statusObserver.onClientStatusChange(currentState);
 
                 Thread.sleep((long)secondsToWait * 1000);
                 clientSocket = new Socket();
@@ -203,7 +204,7 @@ public class TcpService implements Runnable {
         lock.writeLock().lock();
         try {
             currentState = TcpStateEnum.CONNECTED;
-            logger.debug("Setting connection status to " + currentState);
+            statusObserver.onClientStatusChange(currentState);
         } finally {
             lock.writeLock().unlock();
         }
