@@ -6,8 +6,8 @@ import at.fhtw.bic.ode_project.Enums.PlayerStateEnum;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GameService implements ClientObserver{
     private Logger logger = LogManager.getLogger(GameService.class);
@@ -18,10 +18,17 @@ public class GameService implements ClientObserver{
     private PlayerStateEnum playerState = PlayerStateEnum.NONE;
 
     private String username;
+    private HashSet<Player> playerList;
+    private int round_max = 1;
+    private int current_round = 1;
+
 
     private boolean reset_occured = false;
     private List<String> words;
     private String chosenWord = "";
+    public GameService(){
+        playerList = new HashSet<>();
+    }
     public void setTcpService(TcpService tcpService) {
         this.tcpService = tcpService;
     }
@@ -63,7 +70,17 @@ public class GameService implements ClientObserver{
     public void startGame() {
         if(tcpService.isConnected()) {
             logger.info("Trying to start a game. Sending a start game request.");
-            tcpService.sendCommand(CommandEnum.START_GAME_REQUEST);
+            tcpService.sendCommand(CommandEnum.INITIAL_GAME_REQUEST);
+        } else {
+            logger.info("Not connected to server! Cannot start game!");
+            gameObserver.outputWords("Not connected to server! Cannot start game!");
+        }
+    }
+
+    public void sendUsername() {
+        if(tcpService.isConnected()) {
+            logger.info("Sending username to server.");
+            tcpService.sendCommand(CommandEnum.ADD_USER_REQUEST, username);
         }
     }
 
@@ -75,17 +92,44 @@ public class GameService implements ClientObserver{
         logger.info("Drawer chose word and send acknowledgement.");
         tcpService.sendCommand(CommandEnum.DRAWER_ACKNOWLEDGEMENT, word);
     }
-    public void reset() {
-        logger.error("Resetting to initial mode.");
+    public void softReset() {
+        logger.error("Soft resetting to initial mode.");
         gameState = GameStateEnum.INITIAL;
         statusObserver.onGameStatusChange(gameState);
         playerState = PlayerStateEnum.NONE;
         statusObserver.onPlayerStatusChange(playerState);
         words = null;
         chosenWord = "";
+        gameObserver.setDisplayWord("");
         gameObserver.resetMode();
     }
-
+    public void hardReset() {
+        logger.error("Hard resetting to initial mode.");
+        softReset();
+        playerList = new HashSet<>();
+    }
+    public void addOrUpdatePlayerList(String UUID, String username, int points) {
+        Player player = new Player(UUID, username);
+        for(var p : playerList) {
+            if(p.equals(player)) {
+                logger.debug("Updated player in list.");
+                p.setPoints(points);
+                return;
+            }
+        }
+        logger.debug("Added player to list.");
+        player.setPoints(points);
+        playerList.add(player);
+    }
+    public void removePlayerFromList(String UUID, String username, int points) {
+        Player player = new Player(UUID, username, points);
+        if(!playerList.contains(player)) {
+            logger.error("Player doesn't exist.");
+            throw new IllegalArgumentException();
+        }
+        logger.debug("Removed player from list.");
+        playerList.remove(player);
+    }
     @Override
     public void onMessageReceive(String message) {
         // Abarbeitung der commands Start game request, start game acknowledgement
@@ -108,6 +152,34 @@ public class GameService implements ClientObserver{
                 break;
             }
 
+            // Erster "Kontakt" von anderem User
+            case USER_ADDED: {
+                logger.info("A new player joined the server.");
+                String split[] = message.substring(3).split(";");
+                logger.debug("Player UUID: (" + split[0] + ") Username: " + split[1]);
+                addOrUpdatePlayerList(split[0], split[1], 0);
+                gameObserver.outputWords(split[1] + " joined the lobby!");
+                break;
+            }
+
+            case USER_UPDATED: {
+                logger.info("Server updated player.");
+                String split[] = message.substring(3).split(";");
+                logger.debug("Player UUID: (" + split[0] + ") Username: " + split[1] + " Points: " + split[2]);
+                addOrUpdatePlayerList(split[0], split[1], Integer.parseInt(split[2]));
+                gameObserver.updatePlayerOutput(playerList.stream().map(Player::toString).collect(Collectors.joining("\n")));
+                break;
+            }
+
+            case USER_REMOVED: {
+                logger.info("Server removed player.");
+                String split[] = message.substring(3).split(";");
+                logger.debug("Player UUID: (" + split[0] + ") Username: " + split[1] + " Points: " + split[2]);
+                removePlayerFromList(split[0], split[1], Integer.parseInt(split[2]));
+                gameObserver.updatePlayerOutput(playerList.stream().map(Player::toString).collect(Collectors.joining("\n")));
+                break;
+            }
+
             // Erster State, falls noch nichts gestartet ist
             // wird hier überprüft, ob jemand eine falsche state hat
             case START_GAME_REQUEST: {
@@ -120,9 +192,12 @@ public class GameService implements ClientObserver{
                 }
                 logger.info("Send start request acknowledged.");
                 tcpService.sendCommand(CommandEnum.START_GAME_ACKNOWLEDGEMENT);
-
+                String split[] = message.substring(3).split(";");
+                round_max = Integer.parseInt(split[0]);
+                current_round = Integer.parseInt(split[1]);
                 gameState = GameStateEnum.STARTING;
                 statusObserver.onGameStatusChange(gameState);
+                gameObserver.updateRoundCounter(current_round + " / " + round_max);
                 break;
             }
             // Alle Clients haben Acknowledged, somit hat der Server
@@ -204,6 +279,8 @@ public class GameService implements ClientObserver{
 
                 chosenWord = message.substring(3);
                 gameObserver.setDisplayWord(chosenWord);
+                gameObserver.clearCanvas();
+                gameObserver.clearText();
                 break;
             }
 
@@ -225,7 +302,6 @@ public class GameService implements ClientObserver{
 
             case ROUND_END_SUCCESS: {
                 if((isGuesser() && isFinished()) || isDrawer()) {
-
                     playerState = PlayerStateEnum.NONE;
                     statusObserver.onPlayerStatusChange(playerState);
 
@@ -234,14 +310,19 @@ public class GameService implements ClientObserver{
 
                     gameObserver.clearCanvas();
                     gameObserver.clearText();
+
                     tcpService.sendCommand(commandEnum.ROUND_END_ACKNOWLEDGEMENT);
                 }
+                break;
+            }
+            case GAME_ENDED: {
+                softReset();
                 break;
             }
             case ERROR: {
                 logger.error("An error has occured.");
                 logger.debug("Game state: " + gameState + " Player state: " + playerState);
-                reset();
+                softReset();
                 break;
             }
         }
@@ -254,7 +335,7 @@ public class GameService implements ClientObserver{
         gameObserver.outputWords(message);
         if(!reset_occured) {
             reset_occured = true;
-            reset();
+            hardReset();
         }
     }
 }

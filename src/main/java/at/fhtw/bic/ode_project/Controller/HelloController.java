@@ -63,7 +63,10 @@ public class HelloController implements GameObserver, ClientStatusObserver, Game
     private Label gameStatus;
     @FXML
     private Label playerStatus;
-
+    @FXML
+    private Label roundCounter;
+    @FXML
+    private TextArea playerOutput;
     @FXML
     private AnchorPane wordPane;
     @FXML
@@ -248,12 +251,7 @@ public class HelloController implements GameObserver, ClientStatusObserver, Game
     }
     @FXML
     protected void onGameStartButtonClick() {
-        if(client.isConnected() && gameService.isInitial()) {
-            gameService.startGame();
-            gameStartButton.setDisable(true);
-        } else {
-            logger.info("Starting game is not possible! Client is not connected or gameService is not in initial state!");
-        }
+        gameService.startGame();
     }
     @FXML
     protected void onWordOneButtonClick() {
@@ -505,6 +503,18 @@ public class HelloController implements GameObserver, ClientStatusObserver, Game
     }
 
     @Override
+    public void updatePlayerOutput(String output) {
+        logger.debug("Updating playerOuput");
+        Platform.runLater(() -> playerOutput.setText(output));
+    }
+
+    @Override
+    public void updateRoundCounter(String output) {
+        logger.debug("Updating round counter: " + output);
+        Platform.runLater(() -> roundCounter.setText(output));
+    }
+
+    @Override
     public void outputWords(String words) {
         addTextToOutput(words);
     }
@@ -553,6 +563,10 @@ public class HelloController implements GameObserver, ClientStatusObserver, Game
     @Override
     public void onClientStatusChange(TcpStateEnum status) {
         logger.debug("Setting connection status to " + status);
+
+        if(status.equals(TcpStateEnum.CONNECTED)) {
+            gameService.sendUsername();
+        }
 
         if(status.equals(TcpStateEnum.DISCONNECTED)) {
             hostConnectButton.setDisable(false);

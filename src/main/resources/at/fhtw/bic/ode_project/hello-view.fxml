@@ -102,7 +102,10 @@
       <left>
          <AnchorPane prefHeight="200.0" prefWidth="150.0">
             <children>
-               <AnchorPane minHeight="250.0" minWidth="150.0" prefHeight="251.0" prefWidth="150.0" style="-fx-background-color: white; -fx-border-color: black;" />
+               <AnchorPane minHeight="250.0" minWidth="150.0" prefHeight="251.0" prefWidth="150.0">
+                  <children>
+                     <TextArea fx:id="playerOutput" editable="false" prefHeight="251.0" prefWidth="150.0" style="-fx-background-color: white; -fx-border-color: black;" />
+                  </children></AnchorPane>
                <AnchorPane layoutY="251.0" minHeight="250.0" minWidth="150.0" prefHeight="251.0" prefWidth="150.0" style="-fx-background-color: white; -fx-border-color: black;">
                   <children>
                      <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="20.0" prefWidth="125.0" text="Server status:">
@@ -159,6 +162,15 @@
                   </font>
                </Label>
                <Label layoutX="1062.0" layoutY="7.0" text="Chat">
+                  <font>
+                     <Font name="System Bold" size="24.0" />
+                  </font>
+               </Label>
+               <Label layoutX="14.0" layoutY="8.0" text="Round:">
+                  <font>
+                     <Font name="System Bold" size="24.0" />
+                  </font></Label>
+               <Label fx:id="roundCounter" layoutX="103.0" layoutY="8.0" text="0/0">
                   <font>
                      <Font name="System Bold" size="24.0" />
                   </font>

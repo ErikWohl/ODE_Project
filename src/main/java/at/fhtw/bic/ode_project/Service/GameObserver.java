@@ -7,6 +7,8 @@ public interface GameObserver {
     public void resetMode();
     public void setWinMode();
 
+    public void updatePlayerOutput(String output);
+    public void updateRoundCounter(String output);
     public void outputWords(String words);
     public void setDisplayWord(String word);
     public void setChoosableWords(String word1, String word2, String word3);
