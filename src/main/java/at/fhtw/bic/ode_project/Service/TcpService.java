@@ -15,50 +15,54 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 public class TcpService implements Runnable {
     private Logger logger = LogManager.getLogger(TcpService.class);
+    //###################### TCP Variablen #############################
     private Socket clientSocket;
     private SocketAddress socketAddress;
     private BufferedReader input;
     private PrintWriter output;
+    private TcpStateEnum currentState = TcpStateEnum.DISCONNECTED;
 
+    //###################### Observer Variablen #############################
     private ClientObserver clientObserver;
     private ClientStatusObserver statusObserver;
-    private TcpStateEnum currentState = TcpStateEnum.DISCONNECTED;
+
+    //###################### Initialization Methods #############################
+
     public TcpService(String iPAddress, int port) {
         this.socketAddress = new InetSocketAddress(iPAddress, port);
     }
 
+    //###################### Getter Methods #############################
     public Socket getClientSocket() {
         return clientSocket;
     }
-
     public SocketAddress getSocketAddress() {
         return socketAddress;
     }
 
+    //###################### Setter Methods #############################
     public void setSocketAddress(SocketAddress socketAddress) {
         this.socketAddress = socketAddress;
     }
-
     public void setClientObserver(ClientObserver clientObserver) {
         this.clientObserver = clientObserver;
     }
-
     public void setStatusObserver(ClientStatusObserver statusObserver) {
         this.statusObserver = statusObserver;
     }
 
+    //###################### Boolean Methods #############################
     public boolean isDisconnected() {
         return currentState == TcpStateEnum.DISCONNECTED;
     }
-
     public boolean isStarting() {
         return currentState == TcpStateEnum.STARTING;
     }
-
     public boolean isConnected() {
         return currentState == TcpStateEnum.CONNECTED;
     }
 
+    //###################### Send Methods #############################
     public void sendCommand(CommandEnum commandEnum) {
         sendCommand(commandEnum, "");
     }
@@ -81,6 +85,7 @@ public class TcpService implements Runnable {
         }
     }
 
+    //###################### Main TCP Loop Methods #############################
     @Override
     public void run() {
         logger.info("Starting client ...");
@@ -118,7 +123,6 @@ public class TcpService implements Runnable {
 
         }
     }
-
     public void listenFromServer() throws NumberOfRetriesExceededException{
         try {
             if(currentState == TcpStateEnum.STARTING) {
@@ -160,7 +164,6 @@ public class TcpService implements Runnable {
             retry();
         }
     }
-
     public void retry() throws NumberOfRetriesExceededException{
         int tryNum = 0;
         double secondsToWait = 1;

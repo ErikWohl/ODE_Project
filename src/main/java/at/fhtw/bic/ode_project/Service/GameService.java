@@ -11,24 +11,34 @@ import java.util.stream.Collectors;
 
 public class GameService implements ClientObserver{
     private Logger logger = LogManager.getLogger(GameService.class);
+
+    //###################### TCP Variablen #############################
     private TcpService tcpService;
+
+    //###################### Observer Variablen #############################
     private GameObserver gameObserver;
     private GameStatusObserver statusObserver;
+
+    //###################### Status Variablen #############################
     private GameStateEnum gameState = GameStateEnum.INITIAL;
     private PlayerStateEnum playerState = PlayerStateEnum.NONE;
 
+    //###################### Initialization Methods #############################
     private String username;
     private HashSet<Player> playerList;
     private int round_max = 1;
     private int current_round = 1;
 
-
     private boolean reset_occured = false;
     private List<String> words;
     private String chosenWord = "";
+
+    //###################### Initialization Methods #############################
     public GameService(){
         playerList = new HashSet<>();
     }
+
+    //###################### Setter Methods #############################
     public void setTcpService(TcpService tcpService) {
         this.tcpService = tcpService;
     }
@@ -42,6 +52,8 @@ public class GameService implements ClientObserver{
         this.username = username;
     }
 
+    //###################### Boolean Methods #############################
+
     public boolean isInitial() {
         return gameState == GameStateEnum.INITIAL;
     }
@@ -51,7 +63,6 @@ public class GameService implements ClientObserver{
     public boolean isFinished() {
         return gameState == GameStateEnum.FINISHED;
     }
-
     public boolean isDrawer() {
         return playerState == PlayerStateEnum.DRAWER;
     }
@@ -67,6 +78,8 @@ public class GameService implements ClientObserver{
         }
         return false;
     }
+
+    //###################### Gameloop Methods #############################
     public void startGame() {
         if(tcpService.isConnected()) {
             logger.info("Trying to start a game. Sending a start game request.");
@@ -76,14 +89,12 @@ public class GameService implements ClientObserver{
             gameObserver.outputWords("Not connected to server! Cannot start game!");
         }
     }
-
     public void sendUsername() {
         if(tcpService.isConnected()) {
             logger.info("Sending username to server.");
             tcpService.sendCommand(CommandEnum.ADD_USER_REQUEST, username);
         }
     }
-
     public void drawerAcknowledge(String word) {
         if(!tcpService.isConnected() || !isDrawer() || !isStarting()) {
             logger.info("Current status isConnected: " + tcpService.isConnected()+ " isDrawer: " + isDrawer() + " isStarting: " + isStarting());
@@ -130,6 +141,8 @@ public class GameService implements ClientObserver{
         logger.debug("Removed player from list.");
         playerList.remove(player);
     }
+
+    //###################### Gameloop #############################
     @Override
     public void onMessageReceive(String message) {
         // Abarbeitung der commands Start game request, start game acknowledgement
